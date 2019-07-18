@@ -1,7 +1,7 @@
 # LFCS
 Preparation for Linux Foundation Certified System Administrator
 
-- [Module 1: Essential Commands](##module-1)
+- [Module 1: Essential Commands](#module-1-essential-commands)
 
 ## Module 1: Essential Commands
 
