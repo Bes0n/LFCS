@@ -87,3 +87,4 @@ Hierarchy:
 By using command ``` mount ``` we can mount different disks to the different directories.
 Directories in linux defined by *FHS* - Filesystem Hierarchy Standards 
 
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img1.JPG)
