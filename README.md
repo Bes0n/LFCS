@@ -13,6 +13,9 @@ We will use several distributions:
 * SUSE - OpenSUSE
 
 ### Lesson 2: Learning objectives
+
+###### Common linux commands 
+
 * ``` logout ``` or ``` exit ``` - to log off from your current session. 
 * ``` whoami ``` - name of logged in user
 * ``` hostname ``` - full hostname
@@ -21,3 +24,30 @@ We will use several distributions:
 * ``` passwd ``` - change your password 
 * ``` touch ``` - creating an empty file 
 * ``` last ``` - shows logged users to the system
+
+- Working with ``` man ``` command. 
+By using ``` man ``` we will work with following sections:
+1. User commands
+4. Devices
+5. Configuration files
+8. Sysadmin commands
+
+Examples:
+- ``` man 8 useradd ``` - show information about command from section 8 
+- ``` man -a passwd ``` - show information about command from all sections
+- ``` man -k ``` - using manual with keyword, when you don't know which command to use 
+- ``` appropos user ``` - same results as for ``` man -k ``` command 
+- ``` man -k | grep 8 ``` - search for section 8
+- ``` sudo mandb `` - create or update the manual page index caches
+- ``` su - ``` - switch for root user
+
+###### Common bash features
+
+- stdin or '<' redirect standard input
+- stdout - your console, or redirect output to a file use '>' or '>>' to append
+- stderr or 2> - for redirect error
+- piping - ``` ls | less ``` input of ``` ls ``` filtered by ``` less ```
+- piping - ``` ps aux | grep httpd ```
+- ``` find /proc -name "cpu*" 2> /dev/null ``` - find cpu in /proc directory and send error output to the null device
+- ``` history ``` - command line history, to use command from history simple write commands number from history ``` !28 ```
+  
