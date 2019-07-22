@@ -27,10 +27,10 @@ We will use several distributions:
 
 - Working with ``` man ``` command. 
 By using ``` man ``` we will work with following sections:
-1. User commands
-4. Devices
-5. Configuration files
-8. Sysadmin commands
+1. User commands (1)
+4. Devices (4)
+5. Configuration files (5)
+8. Sysadmin commands (8)
 
 Examples:
 - ``` man 8 useradd ``` - show information about command from section 8 
@@ -38,7 +38,7 @@ Examples:
 - ``` man -k ``` - using manual with keyword, when you don't know which command to use 
 - ``` appropos user ``` - same results as for ``` man -k ``` command 
 - ``` man -k | grep 8 ``` - search for section 8
-- ``` sudo mandb `` - create or update the manual page index caches
+- ``` sudo mandb ``` - create or update the manual page index caches
 - ``` su - ``` - switch for root user
 
 ###### Common bash features
@@ -46,8 +46,8 @@ Examples:
 - stdin or '<' redirect standard input
 - stdout - your console, or redirect output to a file use '>' or '>>' to append
 - stderr or 2> - for redirect error
-- piping - ``` ls | less ``` input of ``` ls ``` filtered by ``` less ```
-- piping - ``` ps aux | grep httpd ```
+- piping
+    * ``` ls | less ``` input of ``` ls ``` filtered by ``` less ```
+    * ``` ps aux | grep httpd ```
 - ``` find /proc -name "cpu*" 2> /dev/null ``` - find cpu in /proc directory and send error output to the null device
 - ``` history ``` - command line history, to use command from history simple write commands number from history ``` !28 ```
-  
