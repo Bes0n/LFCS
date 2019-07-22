@@ -68,3 +68,22 @@ Examples:
 * ``` lvcreate --help ``` - all options in [] brackets are optional, all options in {} brackets are mandatory, must be used 
 
 ### Lesson 3: Using Essential File Management Tools
+###### 3.1 Understanding the Linux File System Hierarchy
+
+Hierarchy:
+* / - root directory
+    * /boot - files need to start your computer's OS
+    * /home - loc of user home directories
+    * /usr - operating system files 
+    * /var - diverse information (log, cache)
+
+* mount - connection between directory and device
+    * ``` /dev/sdb1 ``` - 
+        * /dev is device directory, 
+        * sd - scsi disk
+        * b - second scsi disk 
+        * 1 - number of partition.
+
+By using command ``` mount ``` we can mount different disks to the different directories.
+Directories in linux defined by *FHS* - Filesystem Hierarchy Standards 
+
