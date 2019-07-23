@@ -92,6 +92,7 @@ Directories in linux defined by *FHS* - Filesystem Hierarchy Standards
 ###### 3.2 Listing files with ls command
 - ``` ls -l ``` - long list of items
 - ``` ls -a ``` - shows hidden items
+- ``` ls -il ``` - shows inode number too
 - ``` ls -lrt ``` - list items by last time modified
 - ``` ls -l /etc ``` - get content of /etc directory
 - ``` ls -R ``` - list entire directory structure (recursive)
@@ -131,3 +132,55 @@ We can copy items by using relative path:
 - ``` tree /tmp/data ``` - get structure of the directory
 - ``` cp hosts /tmp/data/photos/2016/ ``` - copy hosts to '2016' directory using **absolute** path
 - ``` cp hosts ../../photos/2017/newfiles ``` - copy hosts to '2017' directory using **relative** path
+
+###### 3.7 Moving Files with mv
+``` mv /tmp/testfile ~ ``` - move file 'testfile' to your home directory
+``` mv testfile anotherfile ``` - rename file 
+
+###### 3.8 Removing Files with rm
+``` rm anotherfile ``` - remove anotherfile
+``` rm -r ``` - recursive removal 
+``` rm -rf etc ``` - remove directory without prompt 
+``` rm -rf / ``` - remove everything on your system (dangerous command)
+``` rm -- -myfile ``` - remove files with dashes on the beginning
+
+###### 3.9 Understanging Hard and Symbolic Links (soft links)
+* Links
+    * hard
+    * symbolic
+
+Hard Links:
+- You can have several names to refer on one inode
+- Must be stored on the same device
+- Can't be linked to the directories
+
+Symbolic Links:
+- Refers to the name
+- Become invalid if the name removed
+- More flexible than hard link
+- Can exist on different devices
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img3.JPG)
+
+###### 3.10 Managing Hard and Symbolic Links
+- ``` ln /etc/hosts myhosts ``` - create hard link
+- ``` ls -l /etc/hosts myhosts ``` - directories will be in the same size
+- ``` ls -il /etc/hosts myhosts ``` - list with inodes number
+- ``` ls -s myhosts symhosts ``` - create symbolic link from hard link
+
+symhosts symbolic link refers to the myhosts hard link:
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img4.JPG)
+
+- ``` ln -s etc /etc ``` - create symbolic link to directory '/etc'
+
+###### 3.11 Finding Files with find
+- ``` find /etc -name hosts ``` - start searching in '/etc' directory and look for file with name 'hosts'
+- ``` find /etc -name "*hosts*" ``` - look for file which contain 'hosts' name in it. But use double quotes
+- ``` find / -user "student" ``` - find files which belong to 'student' user 
+
+###### 3.12 Using Advanced find options
+- ``` find /etc -name "*hosts*" -exec cp {} find/names \;``` - find all files in '/etc' with name *hosts* and cp all output from find to the directory 'find/names'. '\;' - must be used to exit from exec interpretor. 
+- ``` find /etc -size +100k -exec cp {} find/size \; ``` - look for files more than 100 kilobytes and copy them into the directory 'find/size'
+- ``` grep student /etc/* 2>/dev/null ``` - grep will look for files, which contains 'student' word inside
+- ``` find /etc -exec grep -l student {} \; 2>dev/null ``` - find files through grep which contains 'student' word inside 
+- ``` find /etc -exec grep -l student {} \; -exec cp {} find/contents/ \; 2>/dev/null ``` - cp all found files in 'find/contents/' directory and avoid any error messages. 
