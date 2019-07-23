@@ -88,3 +88,35 @@ By using command ``` mount ``` we can mount different disks to the different dir
 Directories in linux defined by *FHS* - Filesystem Hierarchy Standards 
 
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img1.JPG)
+
+###### 3.2 Listing files with ls command
+- ``` ls -l ``` - long list of items
+- ``` ls -a ``` - shows hidden items
+- ``` ls -lrt ``` - list items by last time modified
+- ``` ls -l /etc ``` - get content of /etc directory
+- ``` ls -R ``` - list entire directory structure (recursive)
+- ``` ls -ld /etc ``` - get information of /etc directory directly
+
+###### 3.3 Using Shell Wildcards
+Three types of globbing:
+- * - ``` ls a* ``` - will list all files starting with 'a' character. With any length
+- ? - ``` ls ca? ``` - will list files which have 'ca' in the beginning and with last character, for instance 'cat' or 'car'
+- [a-b] - ``` ls ca[bt] ``` or ``` ls ca[b-t] ``` - first will list with 'ca' and 'b' or 't', second will list 'ca' and starting from 'b' to 't'
+- ``` ls [a-d]??* ``` - list word starting with 'a' to 'd', have '??' at least two characters and '*' any amount of characters in the end
+
+###### 3.4 Copying files with cp
+- ``` cp /etc/hosts . ``` - copy hosts files in home directory
+- ``` cp -R /tmp . ``` - copy entire subdirectoy structure in home directory
+- ``` cp /etc/hosts ~/data/ ``` - copy hosts file in home/data directory. Don't forget to put slash behind the directory
+
+###### 3.5 Working with Directories
+- ``` cd /tmp ``` - change directory
+- ``` pwd ``` - print working directory
+- ``` mkdir data ``` - create subdirectory data
+- ``` mkdir -p files/pete ``` - create directory files with pete directory entire using '-p' - path option
+- ``` rmdir videos/ ``` - remove empty directory
+- ``` rm -rf ``` - remove directory forcely. Even if directory has a files in it. 
+
+###### 3.5 Using Absolute and Relative Paths
+Absolute path can be:
+- ``` /tmp ```
