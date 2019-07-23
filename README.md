@@ -99,7 +99,7 @@ Directories in linux defined by *FHS* - Filesystem Hierarchy Standards
 
 ###### 3.3 Using Shell Wildcards
 Three types of globbing:
-- * - ``` ls a* ``` - will list all files starting with 'a' character. With any length
+- '*' - ``` ls a* ``` - will list all files starting with 'a' character. With any length
 - ? - ``` ls ca? ``` - will list files which have 'ca' in the beginning and with last character, for instance 'cat' or 'car'
 - [a-b] - ``` ls ca[bt] ``` or ``` ls ca[b-t] ``` - first will list with 'ca' and 'b' or 't', second will list 'ca' and starting from 'b' to 't'
 - ``` ls [a-d]??* ``` - list word starting with 'a' to 'd', have '??' at least two characters and '*' any amount of characters in the end
@@ -117,6 +117,6 @@ Three types of globbing:
 - ``` rmdir videos/ ``` - remove empty directory
 - ``` rm -rf ``` - remove directory forcely. Even if directory has a files in it. 
 
-###### 3.5 Using Absolute and Relative Paths
+###### 3.6 Using Absolute and Relative Paths
 Absolute path can be:
 - ``` /tmp ```
