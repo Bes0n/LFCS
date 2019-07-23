@@ -102,7 +102,7 @@ Three types of globbing:
 - '*' - ``` ls a* ``` - will list all files starting with 'a' character. With any length
 - ? - ``` ls ca? ``` - will list files which have 'ca' in the beginning and with last character, for instance 'cat' or 'car'
 - [a-b] - ``` ls ca[bt] ``` or ``` ls ca[b-t] ``` - first will list with 'ca' and 'b' or 't', second will list 'ca' and starting from 'b' to 't'
-- ``` ls [a-d]??* ``` - list word starting with 'a' to 'd', have '??' at least two characters and '*' any amount of characters in the end
+Example: ``` ls [a-d]??* ``` - list word starting with 'a' to 'd', have '??' at least two characters and '*' any amount of characters in the end
 
 ###### 3.4 Copying files with cp
 - ``` cp /etc/hosts . ``` - copy hosts files in home directory
@@ -119,4 +119,15 @@ Three types of globbing:
 
 ###### 3.6 Using Absolute and Relative Paths
 Absolute path can be:
-- ``` /tmp ```
+- ``` /tmp/data/files/pete ```
+Relative path can be:
+- ``` /files/photos/2017 ``` - no need to change directory from 'tmp' 
+- ``` cd .. ``` - go to previous directory
+- ``` cd ../.. ``` - go to two levels up on directory
+
+We can copy items by using relative path: 
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img2.JPG)
+
+- ``` tree /tmp/data ``` - get structure of the directory
+- ``` cp hosts /tmp/data/photos/2016/ ``` - copy hosts to '2016' directory using **absolute** path
+- ``` cp hosts ../../photos/2017/newfiles ``` - copy hosts to '2017' directory using **relative** path
