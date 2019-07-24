@@ -244,6 +244,6 @@ Undo:
 - ``` tail -f /var/log/messages ``` - *-f* automatically shows information once it's written
 
 ###### 4.6 Working with grep
-``` grep -ilR student /etc 2>/dev/null ``` - find files which contain *student* word, **-i** insensitive, **-l** means show file name, **-R** means recursive, **2>/dev/null** - avoid any error messages.  
-``` ps aux | grep cron ``` - search inside of processes for process name *cron*
-``` ps aux | grep cron | grep -v grep ``` - inside of search don't show me *grep* output 
+- ``` grep -ilR student /etc 2>/dev/null ``` - find files which contain *student* word, **-i** insensitive, **-l** means show file name, **-R** means recursive, **2>/dev/null** - avoid any error messages.  
+- ``` ps aux | grep cron ``` - search inside of processes for process name *cron*
+- ``` ps aux | grep cron | grep -v grep ``` - inside of search don't show me *grep* output 
