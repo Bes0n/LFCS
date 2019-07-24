@@ -5,6 +5,7 @@ Preparation for Linux Foundation Certified System Administrator
 - [Lesson 1: Installing Linux](#lesson-1-installing-linux)
 - [Lesson 2: Learning Objectives](#lesson-2-learning-objectives)
 - [Lesson 3: Using Essential File Management Tools](#lesson-3-using-essential-file-management-tools)
+- [Lesson 4: Working With Text Files](#lesson-4-working-with-text-files)
 
 ## Module 1: Essential Commands
 
@@ -184,3 +185,6 @@ symhosts symbolic link refers to the myhosts hard link:
 - ``` grep student /etc/* 2>/dev/null ``` - grep will look for files, which contains 'student' word inside
 - ``` find /etc -exec grep -l student {} \; 2>dev/null ``` - find files through grep which contains 'student' word inside 
 - ``` find /etc -exec grep -l student {} \; -exec cp {} find/contents/ \; 2>/dev/null ``` - cp all found files in 'find/contents/' directory and avoid any error messages. 
+
+
+### Lesson 4: Working With Text Files
