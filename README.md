@@ -188,3 +188,62 @@ symhosts symbolic link refers to the myhosts hard link:
 
 
 ### Lesson 4: Working With Text Files
+###### 4.1 Understanding How to work with vim
+
+**vi** works on two modes:
+* command mode
+* input mode
+
+We can switch from **command mode** to **input mode** by using:
+- ``` i ``` 
+- ``` o ``` - opening new line
+- ``` O ``` - opening new line above the current position 
+- ``` [Ins] ``` - same as ``` i ```
+- ``` a ``` - append to the current cursor position 
+
+We can switch from **input mode** to **command mode** by using:
+- ``` ESC ```
+- ``` ZZ ```
+- ``` :wq ```
+
+Copy and paste:
+* ``` v :visual ```
+* ``` d :delete ```
+* ``` y :yank ```
+* ``` p :paste ```
+
+Undo: 
+* ``` u :undo ```
+* ``` Ctrl + R ``` - redo 
+
+- ``` g ``` - top of the document
+- ``` G ``` - bottom of the document 
+- ``` /text ``` - search for text
+- ``` n, N ``` - switch for next inside of search 
+- ``` :300 ``` - go to line 300 
+- ``` dd, x ``` - delete line 
+
+###### 4.2 Creating text files with vim
+- ``` :%s/one/ONE/g ``` - substitute *one* with *ONE*, **g** - means global. For all occurences. 
+
+
+###### 4.3 Browsing text files with less
+- ``` less /var/log/messages ``` - less based on the vim 
+- ``` /root ``` - search for *root* word in less mode
+- ``` n, N ``` - for next item
+- ``` g, G ``` - for top and bottom of the document
+
+###### 4.4 Displaying Text File Contents with cat and tac
+- ``` cat myfile ``` - content of the file from first line last
+- ``` tac myfile ``` - content of the file from last line first
+
+###### 4.5 Using head and tail to see File Start and End 
+- ``` head -n 10 /etc/passwd ``` - get first 10 lines of the files
+- ``` tail -n 10 /etc/passwd ``` - get last 10 lines of the files
+- ``` head -n 4 /etc/passwd | tail -n 1 ``` - get line 4 by using pipeline 
+- ``` tail -f /var/log/messages ``` - *-f* automatically shows information once it's written
+
+###### 4.6 Working with grep
+``` grep -ilR student /etc 2>/dev/null ``` - find files which contain *student* word, **-i** insensitive, **-l** means show file name, **-R** means recursive, **2>/dev/null** - avoid any error messages.  
+``` ps aux | grep cron ``` - search inside of processes for process name *cron*
+``` ps aux | grep cron | grep -v grep ``` - inside of search don't show me *grep* output 
