@@ -249,3 +249,22 @@ Undo:
 - ``` ps aux | grep cron | grep -v grep ``` - inside of search don't show me *grep* output 
 
 ###### 4.7 Understanding Regular Expressions 
+* Regular expressions are text patterns that are used by tools like grep and others
+* Don't confuse regular expressions with globing
+* ``` grep 'a*' ``` - put your regular expressions in single quotes
+* grep, vim, awk, sed - tools which use regular expressions
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img5.JPG)
+
+###### 4.8 Using Regular Expressions with grep
+- ``` grep '^abc' grepfile1 ``` - get words starting with 'abc'
+- ``` grep 'abc$' grepfile1 ``` - get words end with 'abc'
+- ``` grep 'a.c' grepfile1 ```  - matching 'abc', 'a2c', 'aac', 'abc123'
+- ``` man -k user | egrep '1|8' ``` - get extended grep for user manual with pattern 1 or 8
+- ``` egrep 'ab{2}c' grepfile1 ``` - output will be 'abbc', 2 preceeding characters
+- ``` grep 'a[bB]c' grepfile1 ``` - we can get 'abc' or 'aBc' or '123abc'
+- ``` egrep '(123{3})' grepfile1 ``` - get group of items three times, output - '123123123' 
+- ``` grep 'ab*c' grepfile1 ``` - no or more items between 'ab' and 'c', output can be - 'ac', 'abc', 'abbc', 'abbbbbc'
+- ``` egrep 'ab+c' grepfile1 ``` - more items between 'ab' and 'c', output can be - 'abc', 'abbc', 'abbbbbc'
+- ``` egrep 'ab?c' grepfile1 ``` - null or one preceeding character, can be - 'aac', 'ac', 'abc'
+
