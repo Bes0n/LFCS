@@ -6,6 +6,7 @@ Preparation for Linux Foundation Certified System Administrator
 - [Lesson 2: Learning Objectives](#lesson-2-learning-objectives)
 - [Lesson 3: Using Essential File Management Tools](#lesson-3-using-essential-file-management-tools)
 - [Lesson 4: Working With Text Files](#lesson-4-working-with-text-files)
+- [Lesson 5: Learning Objectives](#lesson-5-learning-objectives)
 
 ## Module 1: Essential Commands
 
@@ -267,4 +268,35 @@ Undo:
 - ``` grep 'ab*c' grepfile1 ``` - no or more items between 'ab' and 'c', output can be - 'ac', 'abc', 'abbc', 'abbbbbc'
 - ``` egrep 'ab+c' grepfile1 ``` - more items between 'ab' and 'c', output can be - 'abc', 'abbc', 'abbbbbc'
 - ``` egrep 'ab?c' grepfile1 ``` - null or one preceeding character, can be - 'aac', 'ac', 'abc'
+
+###### 4.9 Using Common Text Processing Utilities
+- ``` cut -d : -f 3 /etc/passwd | sort -n ``` - filter out text from */etc/passwd* by using delimeter *:*, *-f 3* - is a third field. Sort by numbers use '-n'
+- ``` cut -d : -f 1 /etc/passwd | sort ``` - filter out text from */etc/passwd* by using delimeter *:*, *-f 1* - is a first field. Sort by characters'
+- ``` cut -d : -f 1 /etc/passwd | sort | tr [:lower:] [:upper:] ``` - translate output from lower to uppercase
+- ``` echo hello | tr [a-z] [A-Z]``` - translate output from lower to uppercase
+- ``` awk -F : '{print $1}' /etc/passwd ``` - same as *cut* but more powerful 
+- ``` sed -i -e  '10d' grepfile1 ``` - streamline editor, *-i* interactor, *-e* edit. We removed line 10 from grepfile1
+
+###### Lab Solutions
+- ``` head -n 5 /etc/passwd | tail -n 1 ```
+- ``` sed -n '5p' /etc/passwd ``` 
+- ``` ps aux | awk '{print $1}' ```
+- ``` grep '^root' /etc/* 2>/dev/null ```
+- ``` grep '^...$' /etc/* 2>/dev/null ``` 
+- ``` grep alex * | grep -v alexander  ```  
+
+### Lesson 5: Learning Objectives
+###### 5.1 Working as Root or a Local User
+- ``` su - ``` - log on as root
+- ``` sudo su - ``` or ``` sudo -i ``` - log on as root on ubuntu
+
+###### 5.2 Using su to Perform Administration Tasks
+- ``` su - username ``` - perform log on as regular user 'username'
+
+###### 5.3 Using sudo to Perform Administration Task
+- ``` sudo -i ``` - will get error that user is not in the sudoers file
+- ``` id studet ``` - get id of the user. uid, gid and groups
+- ``` usermod -aG wheel student ``` - add 'student' user in 'wheel' group to perform sudo tests
+- ``` visudo ``` - open configuration of sudo file 
+*Note: after adding your user in sudoers, you have to log off and log on, so your changes can be applied*
 
