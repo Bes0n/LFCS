@@ -295,8 +295,8 @@ Undo:
 
 ###### 5.3 Using sudo to Perform Administration Task
 - ``` sudo -i ``` - will get error that user is not in the sudoers file
-- ``` id studet ``` - get id of the user. uid, gid and groups
+- ``` id student ``` - get id of the user. uid, gid and groups
 - ``` usermod -aG wheel student ``` - add 'student' user in 'wheel' group to perform sudo tests
 - ``` visudo ``` - open configuration of sudo file 
-*Note: after adding your user in sudoers, you have to log off and log on, so your changes can be applied*
+- *Note: after adding your user in sudoers, you have to log off and log on, so your changes can be applied*
 
