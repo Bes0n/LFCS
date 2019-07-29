@@ -8,6 +8,9 @@ Preparation for Linux Foundation Certified System Administrator
 - [Lesson 4: Working With Text Files](#lesson-4-working-with-text-files)
 - [Lesson 5: Learning Objectives](#lesson-5-learning-objectives)
 
+- [Module 2: User and Group Management and Permissions](#module-2-user-and-group-management-and-permissions)
+- [Lesson 6: Managing Users and Groups](#lesson-6-managing-users-and-groups)
+
 ## Module 1: Essential Commands
 
 ### Lesson 1: Installing Linux
@@ -300,3 +303,36 @@ Undo:
 - ``` visudo ``` - open configuration of sudo file 
 - *Note: after adding your user in sudoers, you have to log off and log on, so your changes can be applied*
 
+###### 5.4 Creating a simple sudo configuration
+Access for specific users managed by **visudo** command. 
+- ``` sudo passwd linda ``` - set up password for user
+- ``` su - linda ``` - open linda shell 
+- ``` linda ALL=/sbin/useradd ``` - provide access to linda user on ALL hosts to execute command *useradd* in visudo file
+
+###### 5.5 Working on Linux from Graphical or Command Line Mode
+- ``` w ``` - get information about active terminals
+- ``` chvt ``` - switch to virtual terminal
+- ``` chvt 7 ``` - switch back to graphical interface
+- ``` pts/0 ``` - information about user logged through ssh session
+
+###### 5.6 Connecting Remotely to Linux
+- ``` sshd ``` - shell daemon
+- ``` telnetd ``` - insecure and should not be used anymore
+- ``` PuTTy ``` - remote ssh client for windows, nowadays powershell can be used
+- ```  VNC ``` - remote desktop client for Linux 
+- ``` ssh student@192.168.4.240 ``` - connect to linux remote machine with student user
+
+###### 5.7 Understanding the Use of etc securetty
+- ``` vim /etc/securetty ``` - list of secure TTY's. Here you can include or exclude list of terminals. 
+
+
+## Module 2: User and Group Management and Permissions
+### Lesson 6: Managing Users and Groups
+###### 6.2 Understanding the Role of Ownership
+Users as groups can have access to resources, files, directories e.t.c
+- ``` id ``` - get information about users
+- ``` id linda ``` - information about linda user 
+- ``` gid=1000(student) ``` - means that primary group for student user is **student** group
+
+####### 6.3 Creating Users with useradd and adduser
+- ``` useradd -D ``` - create user by using default options
