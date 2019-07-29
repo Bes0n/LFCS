@@ -334,5 +334,24 @@ Users as groups can have access to resources, files, directories e.t.c
 - ``` id linda ``` - information about linda user 
 - ``` gid=1000(student) ``` - means that primary group for student user is **student** group
 
-####### 6.3 Creating Users with useradd and adduser
+###### 6.3 Creating Users with useradd and adduser
 - ``` useradd -D ``` - create user by using default options
+- ``` useradd -s /bin/zsh -c "my user" -m anna ``` - create user on CentOs
+- ``` adduser kate ``` - you will be promted for all requrired information on Ubuntu 
+
+###### 6.4 Creating Groups with groupadd
+- ``` groupadd sales ``` - create group **sales**
+- ``` usermod -aG sales anna ``` - add user to the group **sales**, where **-a** means append to the group
+
+###### 6.5 Managing User and Group Properties
+- ``` usermod -L anna  ``` - lock the user
+- ``` useromd -U annd ``` - unlock the user
+- ``` userdel -r ``` - remove user, it's home directory and mail spool
+- ``` groupdel ``` - remove group
+- ``` groupmod ``` - modify properties of the existing group 
+
+###### 6.6 Configuring Defaults for Creating Users
+We have */etc/default* directory, where *useradd* file can be modified. That one refers to the *useradd -D* option. Default user properties. 
+
+- ``` /etc/login.defs ``` - mail spool location, password expire days, length, age. UID and GID information. 
+- ``` /etc/skel/ ``` - items inside of skel directory will be copied to the home directory of newle created user
