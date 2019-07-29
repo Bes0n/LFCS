@@ -2,14 +2,13 @@
 Preparation for Linux Foundation Certified System Administrator
 
 - [Module 1: Essential Commands](#module-1-essential-commands)
-- [Lesson 1: Installing Linux](#lesson-1-installing-linux)
-- [Lesson 2: Learning Objectives](#lesson-2-learning-objectives)
-- [Lesson 3: Using Essential File Management Tools](#lesson-3-using-essential-file-management-tools)
-- [Lesson 4: Working With Text Files](#lesson-4-working-with-text-files)
-- [Lesson 5: Learning Objectives](#lesson-5-learning-objectives)
-
+    - [Lesson 1: Installing Linux](#lesson-1-installing-linux)
+    - [Lesson 2: Learning Objectives](#lesson-2-learning-objectives)
+    - [Lesson 3: Using Essential File Management Tools](#lesson-3-using-essential-file-management-tools)
+    - [Lesson 4: Working With Text Files](#lesson-4-working-with-text-files)
+    - [Lesson 5: Learning Objectives](#lesson-5-learning-objectives)
 - [Module 2: User and Group Management and Permissions](#module-2-user-and-group-management-and-permissions)
-- [Lesson 6: Managing Users and Groups](#lesson-6-managing-users-and-groups)
+    - [Lesson 6: Managing Users and Groups](#lesson-6-managing-users-and-groups)
 
 ## Module 1: Essential Commands
 
