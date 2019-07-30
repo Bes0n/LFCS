@@ -354,3 +354,34 @@ We have */etc/default* directory, where *useradd* file can be modified. That one
 
 - ``` /etc/login.defs ``` - mail spool location, password expire days, length, age. UID and GID information. 
 - ``` /etc/skel/ ``` - items inside of skel directory will be copied to the home directory of newle created user
+
+###### 6.7 Managing Password Properties
+- ``` passwd --help ``` - settings for passwd command
+- ``` echo password | passwd --stdin brenda ``` - update password for brenda user. Can be scripted. 
+- ``` chage brenda ``` - change age of the password for brenda user
+
+###### 6.8 Understanding User Configuration Files
+- ``` /etc/passwd ``` and ``` /etc/shadow ``` - information stored about users in these folders
+- ``` vipw ``` - vi for passwd, modify contents of /etc/passwd directly
+
+###### 6.9 Understanding Group Configuration Files
+- ``` /etc/group ``` - group configuration files. Primary groups don't have members because they declared already in */etc/passwd* as primary group. We can manage members here of secondary groups. 
+
+###### 6.10 Understanding Login on External Authentication Sources
+Setting up remote authentication can be difficult. Can be done on **Active Directory** or **LDAP** 
+
+###### 6.11 Configuring Login on External Authentication Sources
+First of all we need to install proper software
+
+- ``` yum groups install "Directory Client" ``` - software required for external authentication 
+- ``` authconfig ``` or ``` authconfig-gtk ``` - gtk is graphic utility. To run gui verion *authconfig-gtk*
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img6.JPG)
+
+###### 6.12 Configuring Resource Access Restrictions
+- ``` cd /etc/security ``` then ``` vim limits.conf ``` - here we can configure limits of resources provided to the users.
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img7.JPG)
+
+As you can see from image here we can configure number of maximum processes, maxlogins, cores usage and so on.
+ 
