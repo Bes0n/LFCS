@@ -9,6 +9,7 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 5: Learning Objectives](#lesson-5-learning-objectives)
 - [Module 2: User and Group Management and Permissions](#module-2-user-and-group-management-and-permissions)
     - [Lesson 6: Managing Users and Groups](#lesson-6-managing-users-and-groups)
+    - [Lesson 7: Managing Linux Permissions and Quota](#lesson-7-managing-linux-permissions-and-quota)
 
 ## Module 1: Essential Commands
 
@@ -384,4 +385,23 @@ First of all we need to install proper software
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img7.JPG)
 
 As you can see from image here we can configure number of maximum processes, maxlogins, cores usage and so on.
- 
+
+### Lesson 7: Managing Linux Permissions and Quota
+###### 7.1 Understanding Basic Linux Permissions
+- Basic Permissions (file or directory):
+    * Read (4) - you can read file or list items in that directory
+    * Write (2) - modify contents of the file, create or delete files inside of directory
+    * Execute (1) - you can run the file. You need read permission to execute the script. To access directory to use *cd* we need execute permission. 
+
+- Ownership:
+    * Users
+    * Group
+    * Others
+
+- ``` chmod 760 file ``` - where **7** - permission for user, **6** - permission for group, **0** - permission for others.
+
+As we understand number **7** is a sum of **4**(read) + **2**(write)+ **1**(execute). So **7** is a full permission. So user will have full access permission. 
+
+**6** means that group will have **4**(read) and **2**(write) permissions
+
+**0** menas that others will don't have any permissions for that file 
