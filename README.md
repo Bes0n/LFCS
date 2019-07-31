@@ -389,9 +389,9 @@ As you can see from image here we can configure number of maximum processes, max
 ### Lesson 7: Managing Linux Permissions and Quota
 ###### 7.1 Understanding Basic Linux Permissions
 - Basic Permissions (file or directory):
-    * Read (4) - you can read file or list items in that directory
-    * Write (2) - modify contents of the file, create or delete files inside of directory
-    * Execute (1) - you can run the file. You need read permission to execute the script. To access directory to use *cd* we need execute permission. 
+    * Read **(4)** - you can read file or list items in that directory
+    * Write **(2)** - modify contents of the file, create or delete files inside of directory
+    * Execute **(1)**  - you can run the file. You need read permission to execute the script. To access directory to use *cd* we need execute permission. 
 
 - Ownership:
     * Users
@@ -405,3 +405,49 @@ As we understand number **7** is a sum of **4**(read) + **2**(write)+ **1**(exec
 **6** means that group will have **4**(read) and **2**(write) permissions
 
 **0** menas that others will don't have any permissions for that file 
+
+###### 7.2 Managing Basic Linux Permissions
+- ``` chgrp  sales mydirectory ``` - make group **sales** as an owner of **mydirectory** directory
+- ``` chown anna mydirectory ``` - make user **anna** as an owner of **mydirectory** directory
+- ``` chown linda.sales mydirectory ``` - make **linda** user and **sales** group as an owner of **mydirectory** directory in one command 
+- ``` chmod g+w account ``` - add write group permission to account directory
+- ``` chmod o-rx account ``` - remove read and execute permissions from account directory for others
+
+###### 7.3 Understanding Advanced Linux Permissions
+Advanced permissions:
+- **suid** (4) - set user id. Run file as owner. Dangerous permission.
+- **sgid** (2) - set group id. Run as group owner. Also dangerous permission. Inherit directory group owner. 
+- **sticky** (1) - sticky bit. Has no meaning on files. Delete if only owner for directory. 
+
+
+###### 7.4 Managing Advanced Linux Permissions
+- ``` chmod u+s playme ``` - set permissions as represantive to file. 
+- ``` /bin/passwd ``` - using same permissions set by **suid**
+
+- ``` chmod g+s * ``` - set group id for directory to use shared directory. Group ownership will be set from parent directory. 
+- ``` chmod +t * ``` - add sticky bit to the files. File can't be removed by other users if sticky bit applied inside of shared directory. 
+
+###### 7.5 Understanding Access Control Lists
+Two types of ACL:
+* normal - take care of files that already exists 
+* default - take care of files that will be created
+
+- ```setfacl -R -m g:sales:rx file``` - set **-m** modify access list **-R** recursively to **file** for group **sales** with **rx** read-execute permissions
+- ```setfacl -R -m d:g:sales:rx file``` - **d** column added for default ACL
+
+To use ACL we need filesystem acl. Without this option we couldn't use ACL
+
+###### 7.6 Managing Access Control Lists
+- ```serfacl -R -m g:sales:rx account``` - group **sales** need read and execute for **account** directory
+- ```getfacl account/``` - get information about access list
+
+```
+# file: mydirectory/
+# owner: root
+# group: sales
+user::rwx
+group::rwx
+group:sales:r-x
+mask::rwx
+other::---
+```
