@@ -451,3 +451,52 @@ group:sales:r-x
 mask::rwx
 other::---
 ```
+
+- ```serfacl -m d:g:sales:rx account``` - default actions, which will be applied to any items created in **mydirectory**
+
+```
+# file: mydirectory/
+# owner: root
+# group: sales
+user::rwx
+group::rwx
+group:sales:r-x
+mask::rwx
+other::---
+default:user::rwx
+default:group::rwx
+default:group:sales:r-x
+default:mask::rwx
+default:other::---
+```
+
+
+###### 7.7 Understanding Extended Attributes
+Extended Attributes - properties of files only. 
+Commands: 
+* chattr
+* lsattr 
+
+###### 7.8 Managing Extended Attributes
+- ```chattr +i file1``` - add immutable attribute to the **file1**
+- ```lsattr file1``` - get information about attribute. 
+```
+[root@centos mydirectory]# lsattr file1 
+----i----------- file1
+```
+
+We can't do anything to the immutable file. 
+```
+[root@centos mydirectory]# echo hello >> file1
+-bash: file1: Permission denied
+[root@centos mydirectory]# rm -f file1 
+rm: cannot remove ‘file1’: Operation not permitted
+```
+
+Except: 
+- ``` chattr -i file1 ``` - remove immutable attribute from the **file1**
+
+###### 7.9 Understanding Linux File System Quota
+Put limitation to the user for using disk space. 
+
+###### 7.10 Managing Quota on Ext File Systems
