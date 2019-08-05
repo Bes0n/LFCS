@@ -11,7 +11,7 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 6: Managing Users and Groups](#lesson-6-managing-users-and-groups)
     - [Lesson 7: Managing Linux Permissions and Quota](#lesson-7-managing-linux-permissions-and-quota)
 - [Module 3: Networking](#module-3-networking)
-    - [Lesson 8: Configuring Networking](#lesson-8-managing-linux-permissions-and-quota)
+    - [Lesson 8: Configuring Networking](#lesson-8-configuring-networking)
     - [Lesson 9: Configuring the SSH service](#lesson-9-configuring-the-ssh-service)
     - [Lesson 10: Configuring a Firewall](#lesson-10-configuring-a-firewall)
     - [Lesson 11: Configuring Time Services](#lesson-11-configuring-time-services)
@@ -135,7 +135,8 @@ Absolute path can be:
 Relative path can be:
 - ``` /files/photos/2017 ``` - no need to change directory from 'tmp' 
 - ``` cd .. ``` - go to previous directory
-- ``` cd ../.. ``` - go to two levels up on directory
+- ``` cd ``` - move to your home directory
+- ``` cd ../.. ``` - go to two levels down on directory
 
 We can copy items by using relative path: 
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img2.JPG)
@@ -190,7 +191,7 @@ symhosts symbolic link refers to the myhosts hard link:
 - ``` find / -user "student" ``` - find files which belong to 'student' user 
 
 ###### 3.12 Using Advanced find options
-- ``` find /etc -name "*hosts*" -exec cp {} find/names \;``` - find all files in '/etc' with name *hosts* and cp all output from find to the directory 'find/names'. '\;' - must be used to exit from exec interpretor. 
+- ``` find /etc -name "*hosts*" -exec cp {} find/names \;``` - find all files in '/etc' with name *hosts* and cp all output from find to the directory 'find/names'. '\;' - must be used to exit from exec interpretor. Where **{}** means output of **find** command
 - ``` find /etc -size +100k -exec cp {} find/size \; ``` - look for files more than 100 kilobytes and copy them into the directory 'find/size'
 - ``` grep student /etc/* 2>/dev/null ``` - grep will look for files, which contains 'student' word inside
 - ``` find /etc -exec grep -l student {} \; 2>dev/null ``` - find files through grep which contains 'student' word inside 
@@ -415,7 +416,7 @@ As we understand number **7** is a sum of **4**(read) + **2**(write)+ **1**(exec
 ###### 7.2 Managing Basic Linux Permissions
 - ``` chgrp  sales mydirectory ``` - make group **sales** as an owner of **mydirectory** directory
 - ``` chown anna mydirectory ``` - make user **anna** as an owner of **mydirectory** directory
-- ``` chown linda.sales mydirectory ``` - make **linda** user and **sales** group as an owner of **mydirectory** directory in one command 
+- ``` chown linda:sales mydirectory ``` or ```chown linda.sales mydirectory```  - make **linda** user and **sales** group as an owner of **mydirectory** directory in one command 
 - ``` chmod g+w account ``` - add write group permission to account directory
 - ``` chmod o-rx account ``` - remove read and execute permissions from account directory for others
 
@@ -549,3 +550,11 @@ Put limitation to the user for using disk space.
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img12.JPG)
 
 ###### 8.5 Applying Persistent Network Configuration in CentOS
+- ```cat /etc/redhat-release``` - check your release version
+- ```nmtui``` - network manager user interface
+- ```nmcli``` - network manager command line
+- ```man nmcli-examples``` - you can look for different examples
+- ```rpm -qa | grep bash-completion``` - need for tabulation. To complete written commands
+- ```nmcli connection modify ens33 ipv4.addresses 192.168.4.240/24 ipv4.gateway 192.168.4.2 ipv4.dns 8.8.8.8``` - set static ip address, gateway and DNS. 
+- ```nmcli connection up ens33``` - enable network interface
+- ```cd /etc/sysconfig/network-scripts``` - network configuration stored in this directory. 
