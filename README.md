@@ -444,7 +444,7 @@ Two types of ACL:
 To use ACL we need filesystem acl. Without this option we couldn't use ACL
 
 ###### 7.6 Managing Access Control Lists
-- ```serfacl -R -m g:sales:rx account``` - group **sales** need read and execute for **account** directory
+- ```setfacl -R -m g:sales:rx account``` - group **sales** need read and execute for **account** directory
 - ```getfacl account/``` - get information about access list
 
 ```
@@ -458,7 +458,7 @@ mask::rwx
 other::---
 ```
 
-- ```serfacl -m d:g:sales:rx account``` - default actions, which will be applied to any items created in **mydirectory**
+- ```setfacl -m d:g:sales:rx account``` - default actions, which will be applied to any items created in **mydirectory**
 
 ```
 # file: mydirectory/
@@ -526,3 +526,26 @@ Put limitation to the user for using disk space.
 ### Lesson 8: Configuring Networking
 ###### 8.1 Summarizing IPv4 Basics
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img8.JPG)
+
+###### 8.2 Summarizing IPv6 Basics
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img9.JPG)
+
+- Predefined IPv6 Addresses
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img10.JPG)
+
+- Obtaining an IPv6 Address 
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img11.JPG)
+
+###### 8.3 Applying Run time Network Configuration
+- ``` ip ```- monitor your network in run time. 
+- ```ip link show``` - information about network interfaces
+- ```ip address show``` - get all ip addresses
+- ```ip address add dev ens33 10.0.0.10/24``` - add secondary IP address for devices named **ens33**. After reboot this IP will gone. You need persistent IP address. 
+- ```ifconfig | help``` - shouldn't be used anymore
+- ```ip route show``` - get information about routes
+
+###### 8.4 Understanding Network Device Naming
+- **biosdevname** - uses device names that reveal information about physical location. 
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img12.JPG)
+
+###### 8.5 Applying Persistent Network Configuration in CentOS
