@@ -606,7 +606,7 @@ Let's ping google.com
 64 bytes from bud02s27-in-f14.1e100.net (172.217.19.110): icmp_seq=4 ttl=52 time=21.8 ms
 ```
 
-- ```dig``` - verify dns related issues
+- ```dig``` - verify dns related issues. If command not found install **bind-utils**
 - ```dig google.com``` - let's check for google.com dns name 
 ```
 ; <<>> DiG 9.9.4-RedHat-9.9.4-74.el7_6.2 <<>> google.com
@@ -655,7 +655,7 @@ com.                    827     IN      SOA     a.gtld-servers.net. nstld.verisi
 
 *Note: from **status: NXDOMAIN** we can see that such domain does not exist*
 
-- ``` yum install nmap ``` - information about ports.
+- ``` yum install nmap ``` - install nmap - provides information about ports.
 - ``` nmap 10.0.2.15 ``` - get information about open ports. 
 ```
 Starting Nmap 6.40 ( http://nmap.org ) at 2019-08-05 14:41 CEST
