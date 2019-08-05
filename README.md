@@ -10,7 +10,13 @@ Preparation for Linux Foundation Certified System Administrator
 - [Module 2: User and Group Management and Permissions](#module-2-user-and-group-management-and-permissions)
     - [Lesson 6: Managing Users and Groups](#lesson-6-managing-users-and-groups)
     - [Lesson 7: Managing Linux Permissions and Quota](#lesson-7-managing-linux-permissions-and-quota)
+- [Module 3: Networking](#module-3-networking)
+    - [Lesson 8: Configuring Networking](#lesson-8-managing-linux-permissions-and-quota)
+    - [Lesson 9: Configuring the SSH service](#lesson-9-configuring-the-ssh-service)
+    - [Lesson 10: Configuring a Firewall](#lesson-10-configuring-a-firewall)
+    - [Lesson 11: Configuring Time Services](#lesson-11-configuring-time-services)
 
+    
 ## Module 1: Essential Commands
 
 ### Lesson 1: Installing Linux
@@ -500,3 +506,23 @@ Except:
 Put limitation to the user for using disk space. 
 
 ###### 7.10 Managing Quota on Ext File Systems
+- ```yum install -y quota``` - install required software
+- ```vim /etc/fstab``` - mounting systems quota automatically
+- ```chmod -R 777 /quota``` - full access for /quota directory
+- ``` mount -o remount quota ``` - to be sure that file system mounted with the right option. 
+- ``` quotacheck -mavug ``` - running quotacheck. 
+- ```quota -vu lisa``` - checking what is user **lisa** using 
+- ``` repquota -aug ``` - get information about quota limits for users
+
+###### 7.11 Managing Quota on XFS File Systems
+- ``` xfs_quota --help ``` or ```man xfs_quota```
+
+###### 7.12 Finding Files with Specific Permissions
+- ```man find``` - look for **perm**
+- ```find . -perm 0600 -exec ls -l {} \; ``` - find files in /etc with special permissions and list items. 
+- ``` find . -perm /4000 -exec ls -l {} \; ``` - items which have set user id permission mode. 
+
+## Module 3: Networking
+### Lesson 8: Configuring Networking
+###### 8.1 Summarizing IPv4 Basics
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img8.JPG)
