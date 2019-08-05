@@ -624,7 +624,33 @@ Let's ping google.com
 google.com.             135     IN      A       172.217.19.110
 
 ;; Query time: 19 msec
-;; SERVER: 10.253.0.10#53(10.253.0.10)
+;; SERVER: 120.253.20.10#53(120.253.20.10)
 ;; WHEN: Mon Aug 05 14:30:24 CEST 2019
 ;; MSG SIZE  rcvd: 55
 ```
+*Where IN means an Internet, A means an Answer.* 
+
+- ``` dig nosuchdomainindig.com ``` - search for non-existing domain
+
+``` 
+; <<>> DiG 9.9.4-RedHat-9.9.4-74.el7_6.2 <<>> nosuchdomainindig.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 47450
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4000
+;; QUESTION SECTION:
+;nosuchdomainindig.com.         IN      A
+
+;; AUTHORITY SECTION:
+com.                    827     IN      SOA     a.gtld-servers.net. nstld.verisign-grs.com. 1565008545 1800 900 604800 86400
+
+;; Query time: 19 msec
+;; SERVER: 150.253.20.10#53(150.253.20.10)
+;; WHEN: Mon Aug 05 14:37:01 CEST 2019
+;; MSG SIZE  rcvd: 123
+```
+
+*Note: from **status: NXDOMAIN** we can see that such domain does not exist*
