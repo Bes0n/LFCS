@@ -654,3 +654,15 @@ com.                    827     IN      SOA     a.gtld-servers.net. nstld.verisi
 ```
 
 *Note: from **status: NXDOMAIN** we can see that such domain does not exist*
+
+- ``` yum install nmap ``` - information about ports.
+- ``` nmap 10.0.2.15 ``` - get information about open ports. 
+```
+Starting Nmap 6.40 ( http://nmap.org ) at 2019-08-05 14:41 CEST
+Nmap scan report for centos.example.com (10.0.2.15)
+Host is up (0.000010s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+```
+
