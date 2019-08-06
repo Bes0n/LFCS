@@ -720,10 +720,10 @@ Aug 06 11:52:45 centos.example.com systemd[1]: Stopped OpenSSH server daemon.
 *Note: enabled means that this service will start on startup*
 
 - ```systemctl stop|start|restart sshd``` - to stop, start and restart your service. If you make any change in configuration file you need to restart your service.
-- ```systemctly disable|enable sshd``` - disable or enable sshd service for startup behaviour. 
+- ```systemctl disable|enable sshd``` - disable or enable sshd service for startup behaviour. 
 
 ###### 9.3 Using ssh to Connect to SSH
 - ```ssh student@192.168.4.240``` - log on as *student* on *192.168.4.240*
-- ```ssh -X student@192.168.4.240``` enable graphical interface.
+- ```ssh -X student@192.168.4.240``` enable graphical interface while connect by ssh. You can run any graphical application by simply running name of the application. For instance: ```gedit &```
 - ``` ssh-keygen ``` - will generate public and private keys, which can be used to authenticate on the server by using these keys instead of password prompt. Private key can be secured by **passphrase**
 - ``` ssh-copy-id student@192.168.4.240``` - transfer your public key to remote host, so you can log on using private key, without password prompt. 
