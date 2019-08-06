@@ -3,16 +3,16 @@ Preparation for Linux Foundation Certified System Administrator
 
 - [Module 1: Essential Commands](#module-1-essential-commands)
     - [Lesson 1: Installing Linux](#lesson-1-installing-linux)
-    - [Lesson 2: Learning Objectives](#lesson-2-learning-objectives)
+    - [Lesson 2: Using Essential Tools](#lesson-2-using-essential-tools)
     - [Lesson 3: Using Essential File Management Tools](#lesson-3-using-essential-file-management-tools)
     - [Lesson 4: Working With Text Files](#lesson-4-working-with-text-files)
-    - [Lesson 5: Learning Objectives](#lesson-5-learning-objectives)
+    - [Lesson 5: Connecting to a Server](#lesson-5-connecting-to-a-server)
 - [Module 2: User and Group Management and Permissions](#module-2-user-and-group-management-and-permissions)
     - [Lesson 6: Managing Users and Groups](#lesson-6-managing-users-and-groups)
     - [Lesson 7: Managing Linux Permissions and Quota](#lesson-7-managing-linux-permissions-and-quota)
 - [Module 3: Networking](#module-3-networking)
     - [Lesson 8: Configuring Networking](#lesson-8-configuring-networking)
-    - [Lesson 9: Configuring the SSH service](#lesson-9-configuring-the-ssh-service)
+    - [Lesson 9: Configuring the SSH Service](#lesson-9-configuring-the-ssh-service)
     - [Lesson 10: Configuring a Firewall](#lesson-10-configuring-a-firewall)
     - [Lesson 11: Configuring Time Services](#lesson-11-configuring-time-services)
 
@@ -25,7 +25,7 @@ We will use several distributions:
 * Ubuntu
 * SUSE - OpenSUSE
 
-### Lesson 2: Learning objectives
+### Lesson 2: Using Essential Tools
 
 ###### Common linux commands 
 
@@ -295,7 +295,7 @@ Undo:
 - ``` grep '^...$' /etc/* 2>/dev/null ``` 
 - ``` grep alex * | grep -v alexander  ```  
 
-### Lesson 5: Learning Objectives
+### Lesson 5: Connecting to a Server
 ###### 5.1 Working as Root or a Local User
 - ``` su - ``` - log on as root
 - ``` sudo su - ``` or ``` sudo -i ``` - log on as root on ubuntu
@@ -666,3 +666,64 @@ PORT   STATE SERVICE
 22/tcp open  ssh
 ```
 
+### Lesson 9: Configuring the SSH Service
+###### 9.1 Configuring the SSH Service
+- ```/etc/ssh/``` - directory where ssh configuration files stored. 
+- ```/etc/ssh/sshd_config``` - server configuration config and sshd process configuration
+- ```/etc/ssh/ssh_config``` - configuration for the ssh client
+
+Important lines for **sshd_config** file:
+```
+# If you want to change the port on a SELinux system, you have to tell
+# SELinux about this change.
+# semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
+#
+#Port 22
+
+#PermitRootLogin yes
+```
+
+*Note: here we can change default port for connection and permit root login. **PermitRootLogin** must be set to **no***
+
+**ssh_config** - configuration for ssh client. If you want to modify settings for all users on your system. 
+
+```
+# Host *
+#   ForwardAgent no
+#   ForwardX11 no
+#   RhostsRSAAuthentication no
+#   RSAAuthentication yes
+#   PasswordAuthentication yes
+#   HostbasedAuthentication no
+#   GSSAPIAuthentication no
+#   GSSAPIDelegateCredentials no
+#   GSSAPIKeyExchange no
+#   GSSAPITrustDNS no
+```
+
+###### 9.2 Starting and Enabling the SSH Service
+- ```systemctl status sshd``` - get information about **sshd** service 
+
+```
+● sshd.service - OpenSSH server daemon
+   Loaded: loaded (/usr/lib/systemd/system/sshd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2019-08-06 11:52:45 CEST; 36min ago
+     Docs: man:sshd(8)
+           man:sshd_config(5)
+ Main PID: 4927 (sshd)
+   CGroup: /system.slice/sshd.service
+           └─4927 /usr/sbin/sshd -D
+
+Aug 06 11:52:45 centos.example.com systemd[1]: Stopped OpenSSH server daemon.
+```
+
+*Note: enabled means that this service will start on startup*
+
+- ```systemctl stop|start|restart sshd``` - to stop, start and restart your service. If you make any change in configuration file you need to restart your service.
+- ```systemctly disable|enable sshd``` - disable or enable sshd service for startup behaviour. 
+
+###### 9.3 Using ssh to Connect to SSH
+- ```ssh student@192.168.4.240``` - log on as *student* on *192.168.4.240*
+- ```ssh -X student@192.168.4.240``` enable graphical interface.
+- ``` ssh-keygen ``` - will generate public and private keys, which can be used to authenticate on the server by using these keys instead of password prompt. Private key can be secured by **passphrase**
+- ``` ssh-copy-id student@192.168.4.240``` - transfer your public key to remote host, so you can log on using private key, without password prompt. 
