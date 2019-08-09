@@ -733,4 +733,89 @@ Aug 06 11:52:45 centos.example.com systemd[1]: Stopped OpenSSH server daemon.
 - ```scp 192.168.4.240:/etc/passwd .``` - copy **/etc/passwd** from remote host **192.168.4.240** to your home directory. 
 
 ###### 9.5 Managing File Synchronization using rsync
-- ```rsync -avz /tmp student@192.168.4.240:/home/student/tmp``` - will syncronize local **/tmp** directory on remote host **192.168.4.240**. Useful if you need to syncronize large amount of data.  
+- ```rsync -avz /tmp student@192.168.4.240:/home/student/tmp``` - will syncronize local **/tmp** directory on remote host **192.168.4.240**. Useful if you need to syncronize large amount of data.
+
+### Lesson 10: Configuring a Firewall
+###### 10.1 Understanding Linux Firewalling
+- **netfilter** - linux kernel firewalling functionality. 
+- **iptables** - utility which takes care of firewalling
+    - firewalld - on RedHat
+    - ufw - on Ubuntu
+    - susefirewall - on SUSE
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img14.JPG)
+
+###### 10.2 Configuring a Firewall with firewalld
+- ```firewall-cmd --list-all``` - get current configuration of firewall on **CentOs**
+```
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: enp0s3 enp0s8
+  sources:
+  services: ssh dhcpv6-client
+  ports:
+  protocols:
+  masquerade: no
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+```
+
+- Where:
+    - **interfaces** - is your current network interface to which role assigned
+    - **services** and **ports** - which service or port to configure. 
+
+- ``` firewall-cmd --get-services ``` - list of services that's provided which exists by default 
+- ```cd /usr/lib/firewalld/services/``` - directory where services configuration files stored. Written by user firewalld.
+- ``` firewall-cmd --add-service samba ``` - add samba services and allow required ports. But after firewall-cmd restart, added service will be disappear. It's because of different between runtime configuration and persistent one. 
+- ```firewall-cmd --add-service samba --permanent``` - add samba service to firewalld configuration, but now permanently. 
+- ```firewall-cmd --reload``` - reload firewalld configuration. 
+- ```firewall-cmd --help | grep add-port``` - get information what you need to add a port, or port range
+- ```firewall-cmd --add-port 4000-4005/tcp``` - open **TCP** ports from **4000** to **4005** in runtime configuration. For pestistent you just need to add **--permanent** key. 
+
+###### 10 3 Configuring a Firewall with ufw
+- ```sudo ufw enable``` - enable ubuntu firewall. 
+- ```sudo ufw allow ssh``` - enable SSH access
+- ```sudo ufw status``` - get status of your firewall and list of ports. 
+- ```sudo ufw reject out ssh``` - outgoing ssh traffic is now rejected 
+- ```sudo ufw delete reject out ssh``` - delete created firewall rule. 
+- ```sudo ufw deny proto tcp from 192.168.4.245 to any port 22``` - denied traffic from **192.168.4.245** to port **22**
+- ``` sudo ufw reset ``` - reset firewall to default settings
+- ```sudo ufw app list``` - get list of available applications on firewall 
+- ```sudo ufw app info OpenSSH``` - will show you info about OpenSSH application and port information
+- ```sudo ufw logging on ``` - switch on logging 
+
+###### 10.4 Configuring a Firewall with SUSEfirewall
+- ```yast2``` - graphical version of **yast**
+Click on **firewall** and start from configuration of **Interfaces**. After selection of zone we have to configure services which is located in **Allowed Services**. Add required service to the list of allowed services. Or we can use advanced configuration. Define custom ports and so on. 
+
+###### 10.5 Understanding iptables Basics
+In **iptables** we're working with chains
+* Input
+* Output
+* Forward - for routing. 
+
+- ```iptables {-A|I}``` - where **A** for append, **I** for insert. 
+- ``` -j LOG|ACCEPT|DROP|REJECT``` - action for packet, **LOG** - write packet to the log file and do next actions, **ACCEPT** - accept this packet, **DROP** - silently drop packet (useful for external networks), **REJECT** - reject packet and inform about that to packet sender.  
+
+##### 10.6 Configuring a Firewall with iptables
+- ```systemctl stop firewalld``` - disable firewalld on centos
+- ``` iptables -L ``` - check status of iptables
+- ``` iptables -P INPUT DROP ``` and ```  iptables -P OUTPUT DROP ``` - configure iptables to reject any input/output behaviours. 
+- ``` iptables -A INPUT -i lo -j ACCEPT ``` and ``` iptables -A INPUT -o lo -j ACCEPT ``` - allow incoming and outgoing connection for internal loop back interface - **lo** 
+- ``` iptables -L -v ``` - to get much more details about configured rules. 
+- ``` iptables -A INPUT -p tcp --dport 22 -j ACCEPT ``` - allow traffic with the destination port **22**
+- ```iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT``` - allow answers to get out from system. Load **state kernel module**. 
+- ```iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT``` - allow all traffic going out to port **22**
+- ```iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT``` - allow answers to get out from system. Load **state kernel module** 
+- ```iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT``` - allow outgoing web traffic. 
+    - ```yum install elinks``` - when we will try to install package, we going to receive errors *couldn't resolve name*. That one related to the DNS
+- ```iptables -A OUTPUT -p udp --dport 53 -j ACCEPT``` - allow DNS.
+- ```iptables-save``` - will be written to stdout
+- ```iptables-save > /etc/sysconfig/iptabes``` - write your config to **iptables** file. So this config will be found after reboot.
+- RedHat specific configuration:
+    - ```systemctl disable firewalld``` - disable firewalld
+    - ```yum install iptables-services``` - install **iptables-services**, because that one is not installed by default. 
+    - ```systemctl enable iptables``` - service will start automatically after that. 
