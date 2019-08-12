@@ -804,7 +804,7 @@ In **iptables** we're working with chains
 - ```systemctl stop firewalld``` - disable firewalld on centos
 - ``` iptables -L ``` - check status of iptables
 - ``` iptables -P INPUT DROP ``` and ```  iptables -P OUTPUT DROP ``` - configure iptables to reject any input/output behaviours. 
-- ``` iptables -A INPUT -i lo -j ACCEPT ``` and ``` iptables -A INPUT -o lo -j ACCEPT ``` - allow incoming and outgoing connection for internal loop back interface - **lo** 
+- ``` iptables -A INPUT -i lo -j ACCEPT ``` and ``` iptables -A OUTPUT -o lo -j ACCEPT ``` - allow incoming and outgoing connection for internal loop back interface - **lo** 
 - ``` iptables -L -v ``` - to get much more details about configured rules. 
 - ``` iptables -A INPUT -p tcp --dport 22 -j ACCEPT ``` - allow traffic with the destination port **22**
 - ```iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT``` - allow answers to get out from system. Load **state kernel module**. 
@@ -819,3 +819,13 @@ In **iptables** we're working with chains
     - ```systemctl disable firewalld``` - disable firewalld
     - ```yum install iptables-services``` - install **iptables-services**, because that one is not installed by default. 
     - ```systemctl enable iptables``` - service will start automatically after that. 
+
+##### Lab
+- ```iptables -P INPUT DROP``` - set up default policy to **DROP** all **INPUT** traffic
+- ```iptables -P OUTPUT DROP``` - set up default policy to **DROP** all **OUTPUT** traffic
+- ```iptables -A INPUT -i lo -j ACCEPT``` - **-A** - append to the default policy. Accept any **INPUT** (**-i**) connections for **lo** interface.
+- ```iptables -A OUTPUT -o lo -j ACCEPT``` - **-A** - append to the default policy. Accept any **OUTPUT** (**-o**) connections for **lo** interface.
+- ```iptables -A INPUT -p icmp -j ACCEPT``` - enable **icmp** protocol for **INPUT** incoming connections.
+- ```iptables -A OUTPUT -m state --state ESTABLISHED,RELATIVE -j ACCEPT``` - allow answers to get out from system. Load **state kernel module** 
+- ```iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT``` - allow outgoinig HTTP for yum. 
+- ``` iptables -A OUTPUT -p udp --dport 53 -j ACCEPT``` - allow DNS.  
