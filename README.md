@@ -828,4 +828,20 @@ In **iptables** we're working with chains
 - ```iptables -A INPUT -p icmp -j ACCEPT``` - enable **icmp** protocol for **INPUT** incoming connections.
 - ```iptables -A OUTPUT -m state --state ESTABLISHED,RELATIVE -j ACCEPT``` - allow answers to get out from system. Load **state kernel module** 
 - ```iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT``` - allow outgoinig HTTP for yum. 
-- ``` iptables -A OUTPUT -p udp --dport 53 -j ACCEPT``` - allow DNS.  
+- ``` iptables -A OUTPUT -p udp --dport 53 -j ACCEPT``` - allow DNS.
+
+### Lesson 11: Configuring Time Services
+###### 11.1 Understanding Time on Linux
+Time in linux: 
+- ``` hwclock ``` - hardware closk, BIOS.
+    - ```hwclock``` - set hardware clock and synchronize with system clock. 
+- ``` system clock ``` - system cloak appears after boot.
+    - ``` date ``` - to set system clock
+
+- ``` NTP ``` - Network Time Protocol, used to synchronize your time. 
+    - ``` ntpd ``` or ``` chronyd ```- used to sync with ntp server
+
+*Time set in UTC (Universal Time Coordinate)*
+*Difference between system time and ntp time shouldn't be more that **10 mins**. Otherwise your local host will refuse to syncrhonize with NTP*
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img15.JPG)
