@@ -841,7 +841,7 @@ Time in linux:
 - ``` NTP ``` - Network Time Protocol, used to synchronize your time. 
     - ``` ntpd ``` or ``` chronyd ```- used to sync with ntp server
 
-*Time set in UTC (Universal Time Coordinate) \n*
+*Time set in UTC (Universal Time Coordinate)*  
 *Difference between system time and ntp time shouldn't be more that **10 mins**. Otherwise your local host will refuse to syncrhonize with NTP*
 
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img15.JPG)
