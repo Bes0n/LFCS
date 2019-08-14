@@ -1003,3 +1003,15 @@ Reboot **ntpd** service and check ntpq status ``` ntpq -p ```. Stratum **16** me
 - ``` ctrl + c ``` - cancel running job
 
 ###### 12.3 Monitoring Processes with top
+- ```top``` -  provides all required information about processes. 
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img17.JPG)
+
+Here we can see **time**, **uptime**, number of the logged on users and load average (5 10 15 minutes):    
+``` top - 15:36:03 up  3:45,  1 user,  load average: 0.00, 0.01, 0.05 ```  
+
+Third line shows us CPU load. By pressing **1** we can see load for one cpu:  
+```%Cpu0  :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st```   
+
+Second line shows to us currently running tasks:  
+```Tasks:  94 total,   1 running,  93 sleeping,   0 stopped,   0 zombie```  
