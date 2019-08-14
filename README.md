@@ -1025,8 +1025,8 @@ Processes column:
 - ``` top -u student ``` - processes started by specific user **student**
 
 ###### 12.4 Changing top Display Properties
-- ``` top ``` and then type 
-    -``` f ``` - for fields. Information about fields you can see in top. You can manage which fields to show, remove, sort and so on. 
+- ``` top ``` and then type
+    - ``` f ``` - for fields. Information about fields you can see in top. You can manage which fields to show, remove, sort and so on. 
     - ``` z ``` - for changing color of top
     - ``` W ``` - for saving configuration to **'/root/.toprc'**. this setting will available if you going to type ``` top ``` command again. 
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img18.JPG)
