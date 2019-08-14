@@ -868,7 +868,7 @@ Better do not use NTP's with **stratum 10** - which means local clock, or **stra
 - ```chrony``` or ```chronyd``` - new time synchronization daemon with nano secs ability. 
 
 Configuration of ntpd located in **/etc/ntp.conf**  
-Where:
+Where:  
     - ```server 0.opensuse.pool.ntp.org iburst``` - means which server use to sync and **iburst** - will synchronize time forcely if local time has big difference with NTP server.   
 
 
@@ -939,7 +939,7 @@ From output you can see **Leap status     : Not synchronised**, what means we di
 - ```iptables -A INPUT -p udp --dport 123 -j ACCEPT``` - allow incoming time traffic. 
 - ```iptables -A OUTPUT -p udp --dport 123 -j ACCEPT``` - same for **OUTPUT** traffic
 
-Let's run ``` chronyc tracking ``` again. Leap status is normal now:
+Let's run ``` chronyc tracking ``` again. **Leap status** is **normal** now:
 ``` 
 Reference ID    : 51007CFD (mail.deployis.eu)
 Stratum         : 4
@@ -954,4 +954,29 @@ Root delay      : 0.042404659 seconds
 Root dispersion : 0.036888056 seconds
 Update interval : 1.7 seconds
 Leap status     : Normal
+```
+
+###### Lab solution
+- ``` hwclock --systohc ``` and ``` hwclock --hctosys ``` - sync hardware and system clock and visa versa. 
+- check iptables to allow **ntp** port **123**
+- run ``` chronyc sources ``` and ```chronyc tracking``` to be sure that everything works properly.
+- modify your **/etc/chrony.conf** file and uncomment following lines (to allow local clients use your ntp server in network):  
+```
+# Allow NTP client access from local network.
+allow 10.0.10.0/16
+```
+
+Go to your client and configure ``` /etc/ntp.conf ```. Where as a **server** you need to specify your NTP server and comment out pool or servers:  
+```
+server 10.0.10.11 iburst
+server 127.127.1.0              # local clock (LCL)
+fudge  127.127.1.0 stratum 5    # LCL is unsynchronized
+```
+
+Reboot **ntpd** service and check ntpq status ``` ntpq -p ```. Stratum **16** means that it's unreachable and **.INIT** - initializing status. Slowly it's going to synchronize:  
+```
+     remote           refid      st t when poll reach   delay   offset  jitter
+==============================================================================
+ 10.0.10.11      .INIT.          16 u    -   64    0    0.000    0.000   0.000
+ LOCAL(0)        .LOCL.           5 l   24   64    1    0.000    0.000   0.000
 ```
