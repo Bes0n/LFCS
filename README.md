@@ -845,3 +845,62 @@ Time in linux:
 *Difference between system time and ntp time shouldn't be more that **10 mins**. Otherwise your local host will refuse to syncrhonize with NTP*
 
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img15.JPG)
+
+###### 11.2 Configuring Local Time on Linux
+- ```hwclock``` - output will be ```2019-08-13 16:06:10.200221+0200```
+    - ```hwclock --systohc``` - sync system time to the hardware time
+    - ```hwclock --hctosys``` - sync hardware time to the system time 
+- ```date``` - output will be ```Út srp 13 17:00:23 CEST 2019```
+    - ```date -s 17:15``` - set up system time to *17:15*
+- ```timedatectl``` - time and date configuration on CentOS
+
+###### 11.3 Understanding the NTP Protocol
+- Concept of ```stratum```. And the most reliable NTP service has a value ```stratum 0```
+
+Stratum reliability:
+    - ```Stratum 0``` - is an atomic clock. 
+    - ```Stratum 1``` - server which sync with **Stratum 0**
+    - ```Stratum 2``` - client which sync server and has **Stratum 1**
+Better do not use NTP's with **stratum 10** - which means local clock, or **stratum 16** - which means clock hasn't set up yet. 
+
+###### 11.4 Configuring Time Synchronization with ntpd
+- ```ntpd``` - Time Synchronization Daemon. 
+- ```chrony``` or ```chronyd``` - new time synchronization daemon with nano secs ability. 
+
+Configuration of ntpd located in **/etc/ntp.conf**  
+Where:
+    - ```server 0.opensuse.pool.ntp.org iburst``` - means which server use to sync and **iburst** - will synchronize time forcely if local time has big difference with NTP server.   
+
+
+Internal hardware clock for synchronization, local clock has **stratum 10**, you can change it to **stratum 5**:
+```
+## Undisciplined Local Clock. This is a fake driver intended for backup  
+## and when no outside source of synchronized time is available.  
+##  
+# server 127.127.1.0            # local clock (LCL)    
+# fudge  127.127.1.0 stratum 10 # LCL is unsynchronized  
+```
+
+When you uncomment **server** and **fudge** options, restart ntpd service:  
+- ```systemctl restart ntpd```
+- ```ntpq -p``` - display information about NTP. Where we can see that local clock is used and stratum is **5**
+```
+     remote           refid      st t when poll reach   delay   offset  jitter
+==============================================================================
+ LOCAL(0)        .LOCL.           5 l   24   64    1    0.000    0.000   0.000
+```
+
+###### 11.5 Configuring Time Synchronization with chronyd
+- ``` chrony ``` - default ntp solution for RedHat and Fedora family 
+- ```yum install chrony``` - to install it if you don't have. 
+- ```systemctl status chronyd``` - get status of **chrony** daemon
+- ```/etc/chrony.conf``` - configuration file of **chrony**  
+
+```
+# Use public servers from the pool.ntp.org project.
+# Please consider joining the pool (http://www.pool.ntp.org/join.html).
+server 0.centos.pool.ntp.org iburst
+server 1.centos.pool.ntp.org iburst
+server 2.centos.pool.ntp.org iburst
+server 3.centos.pool.ntp.org iburst
+```
