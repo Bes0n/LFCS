@@ -984,3 +984,22 @@ Reboot **ntpd** service and check ntpq status ``` ntpq -p ```. Stratum **16** me
 ## Module 4: Operating Running Systems
 ### Lesson 12: Process Management
 ###### 12.1 Understanding Linux Processes and Jobs
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img16.JPG)
+
+- Kernel starts with **PID** number 1: **systemd** (was **init** before)
+- **Systemd** starts a lot of **kernel threads** which indicated by **[]** brackets. 
+- processes can be monitored by **ps** command
+- processes managed by user in **bash shell** also called as a jobs. Can be put in background and foreground. 
+- **thread** - task that can be started by an individual process. Or it a subtask of one single process. For instance **apache** can create spawn a lot of **threads**
+
+###### 12.2 Managing Interactive Shell Jobs
+- ``` sleep 600 ``` - run sleep commands for 600 seconds
+- ``` ctrl + z ``` - to stop job
+- ``` bg ``` - to run stopped job in the background. 
+- ``` sleep 600 & ``` - where **&** means run command in background
+- ``` jobs ``` - monitor currently running jobs. 
+- ``` fg ``` - run last job to the foreground. 
+- ``` fg 1 ``` - move specific job to the foreground
+- ``` ctrl + c ``` - cancel running job
+
+###### 12.3 Monitoring Processes with top
