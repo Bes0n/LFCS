@@ -904,3 +904,54 @@ server 1.centos.pool.ntp.org iburst
 server 2.centos.pool.ntp.org iburst
 server 3.centos.pool.ntp.org iburst
 ```
+
+- ```chronyc sources``` - To verify what **chrony** is doing
+
+```
+210 Number of sources = 4
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+===============================================================================
+^? mail.deployis.eu              0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? zearla.netinform.hu           0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? 185.82.232.254                0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? 84.2.44.19                    0   6     0     -     +0ns[   +0ns] +/-    0ns
+```
+
+- ``` chronyc tracking``` - to get more details
+```
+Reference ID    : 00000000 ()
+Stratum         : 0
+Ref time (UTC)  : Thu Jan 01 00:00:00 1970
+System time     : 0.000000000 seconds fast of NTP time
+Last offset     : +0.000000000 seconds
+RMS offset      : 0.000000000 seconds
+Frequency       : 0.000 ppm slow
+Residual freq   : +0.000 ppm
+Skew            : 0.000 ppm
+Root delay      : 1.000000000 seconds
+Root dispersion : 1.000000000 seconds
+Update interval : 0.0 seconds
+Leap status     : Not synchronised
+```
+
+From output you can see **Leap status     : Not synchronised**, what means we didn't synchronised yet. This is because of the **iptables**. Let's add rule to the chain. 
+
+- ```iptables -A INPUT -p udp --dport 123 -j ACCEPT``` - allow incoming time traffic. 
+- ```iptables -A OUTPUT -p udp --dport 123 -j ACCEPT``` - same for **OUTPUT** traffic
+
+Let's run ``` chronyc tracking ``` again. Leap status is normal now:
+``` 
+Reference ID    : 51007CFD (mail.deployis.eu)
+Stratum         : 4
+Ref time (UTC)  : Wed Aug 14 10:08:45 2019
+System time     : 0.000000461 seconds fast of NTP time
+Last offset     : -0.000689063 seconds
+RMS offset      : 0.000689063 seconds
+Frequency       : 3.080 ppm fast
+Residual freq   : +0.000 ppm
+Skew            : 512.361 ppm
+Root delay      : 0.042404659 seconds
+Root dispersion : 0.036888056 seconds
+Update interval : 1.7 seconds
+Leap status     : Normal
+```
