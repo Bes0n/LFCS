@@ -1010,8 +1010,25 @@ Reboot **ntpd** service and check ntpq status ``` ntpq -p ```. Stratum **16** me
 Here we can see **time**, **uptime**, number of the logged on users and load average (5 10 15 minutes):    
 ``` top - 15:36:03 up  3:45,  1 user,  load average: 0.00, 0.01, 0.05 ```  
 
-Third line shows us CPU load. By pressing **1** we can see load for one cpu:  
+Third line shows us CPU load. By pressing **1** we can see load for one cpu. Where **us** means user space, **sy** means system space, **ni** - nice, priority modified, **id** - idle, **wa** - waiting for I/O (hard disk):  
 ```%Cpu0  :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st```   
 
 Second line shows to us currently running tasks:  
 ```Tasks:  94 total,   1 running,  93 sleeping,   0 stopped,   0 zombie```  
+
+Processes column:  
+```PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND```
+- **S** - means status (R - running, S - sleeping)
+- **VIRT RES SHR** - memory usage, Virtual memory(claimed memory), Resident memory (real usage), SHR(Shared memory)
+- **PR** - priority
+- **PID** - unique Process ID
+- ``` top -u student ``` - processes started by specific user **student**
+
+###### 12.4 Changing top Display Properties
+- ``` top ``` and then type 
+    -``` f ``` - for fields. Information about fields you can see in top. You can manage which fields to show, remove, sort and so on. 
+    - ``` z ``` - for changing color of top
+    - ``` W ``` - for saving configuration to **'/root/.toprc'**. this setting will available if you going to type ``` top ``` command again. 
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img18.JPG)
+
+###### 12.5 Requesting Process Properties with ps
