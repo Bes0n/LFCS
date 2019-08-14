@@ -15,8 +15,8 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 9: Configuring the SSH Service](#lesson-9-configuring-the-ssh-service)
     - [Lesson 10: Configuring a Firewall](#lesson-10-configuring-a-firewall)
     - [Lesson 11: Configuring Time Services](#lesson-11-configuring-time-services)
-
-    
+- [Module 4: Operating Running Systems](#module-4-operating-running-systems)
+    - [Lesson 12: Process Management](#lesson-12-process-management)
 ## Module 1: Essential Commands
 
 ### Lesson 1: Installing Linux
@@ -980,3 +980,7 @@ Reboot **ntpd** service and check ntpq status ``` ntpq -p ```. Stratum **16** me
  10.0.10.11      .INIT.          16 u    -   64    0    0.000    0.000   0.000
  LOCAL(0)        .LOCL.           5 l   24   64    1    0.000    0.000   0.000
 ```
+
+## Module 4: Operating Running Systems
+### Lesson 12: Process Management
+###### 12.1 Understanding Linux Processes and Jobs
