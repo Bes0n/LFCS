@@ -17,6 +17,9 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 11: Configuring Time Services](#lesson-11-configuring-time-services)
 - [Module 4: Operating Running Systems](#module-4-operating-running-systems)
     - [Lesson 12: Process Management](#lesson-12-process-management)
+    - [Lesson 13: Managing Software Packages](#lesson-13-managing-software-packages)
+
+
 ## Module 1: Essential Commands
 
 ### Lesson 1: Installing Linux
@@ -1032,3 +1035,53 @@ Processes column:
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img18.JPG)
 
 ###### 12.5 Requesting Process Properties with ps
+- ``` ps aux ``` - list all processes
+- ``` ps aux | grep sshd ``` - find process **sshd**
+- ``` ps -ef ``` - **PPID** - parent process id, we can see which process is the parent one.  
+- ``` [kthreadd] ``` - process in square bracket means **kernel thread**. Can't be managed as a regular process. 
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img19.JPG)
+
+- ``` ps -e -o pid,args --forest | less ``` - use filtering option, to show **output**, only **PID** and **arguments** in a forest view
+- ``` ps aux --sort pmem ``` - sort processes using pmemory
+
+###### 12.6 Changing Process Priority
+- while in **TOP** command press **R** to change priority of the process. Where we need to enter **PID to renice**. 
+- Nice range is starting from **-20** to **+90**. 
+    - **-20** - is not going to be nice to other processes
+    - **+90** - process will be nice to other processes
+    *Note: regular user can run only positive numbers for nice, root can use also negative valuesq*
+- ``` nice [OPTION] [COMMAND [ARG]] ```
+- ``` nice -n 5 dd if/dev/zero =of/dev/null & ``` - going to start process with **nice** value **5**
+- ``` renice -n 5 14053 ``` - renice already running process and set **nice** value to **5**
+
+###### 12.7 Managing Processes with Signals
+- ``` man 7 signals ``` - read about signals. 
+    - ``` SIGTERM (15) ``` - nice way to ask process stop it's activity. Gracefull stop. 
+    - ``` SIGKILL (9) ``` - roughly end the process. 
+- ``` top ``` and then press ``` K ```, enter PID to kill the process. We have to enter **PID** and select **signal**. In our case we need **SIGKILL**
+- ``` kill 14053 ``` - kill proces with PID number 14053
+- ``` killall dd ``` - kill all processes in match **dd**
+- ``` kill -9 14231 ``` - SIGKILL for 14231 PID
+- ``` pidof dd ``` - PID of command **dd**
+- ``` kill $(pidof dd)``` - kill all **PIDs** of **dd** command
+
+### Lesson 13: Managing Software Packages
+###### 13.1 Installing Software from Source
+
+- ``` tar (Tar Balls) ``` - tar archiver
+- ``` tar xvf nmapgui-1.0.2.src.tar.gz ``` - where **x** means extract, **v** verbose, **f** - file. 
+If you're working with source file, most time we have **Makefile** in source code. Also we have **README.txt** which is important to read.  
+
+###### 13.2 Installing Software from Tar Balls
+- ``` tar xvf nmapgui.src.tar.gz -C /tmp ``` where **-C** means location where to extract
+- ```file nmapgui-1.0.2.src.tar.gz``` - if you don't know what type of data it's, run ``` file ``` command.  
+```
+nmapgui-1.0.2.src.tar.gz: gzip compressed data, was "nmapgui-1.0.2.src.tar", from Unix, last modified: Tue Sep  6 23:49:00 2005
+```  
+- ``` gunzip nmapgui-1.0.2.src.tar ``` - we can unzip archive with **gunzip**. In the end we will have file **nmapgui-1.0.2.src.tar**
+- ``` file nmapgui-1.0.2.src.tar ``` - we will see as the result  
+```
+nmapgui-1.0.2.src.tar: POSIX tar archive (GNU
+```  
+- ``` tar tvf nmapgui-1.0.2.src.tar | less ``` - to see content of the archive. 
