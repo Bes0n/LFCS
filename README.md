@@ -1060,9 +1060,9 @@ Processes column:
     - ``` SIGTERM (15) ``` - nice way to ask process stop it's activity. Gracefull stop. 
     - ``` SIGKILL (9) ``` - roughly end the process. 
 - ``` top ``` and then press ``` K ```, enter PID to kill the process. We have to enter **PID** and select **signal**. In our case we need **SIGKILL**
-- ``` kill 14053 ``` - kill proces with PID number 14053
+- ``` kill 14053 ``` - kill proces with **PID** number **14053**
 - ``` killall dd ``` - kill all processes in match **dd**
-- ``` kill -9 14231 ``` - SIGKILL for 14231 PID
+- ``` kill -9 14231 ``` - **SIGKILL** for **14231** PID
 - ``` pidof dd ``` - PID of command **dd**
 - ``` kill $(pidof dd)``` - kill all **PIDs** of **dd** command
 
@@ -1084,4 +1084,123 @@ nmapgui-1.0.2.src.tar.gz: gzip compressed data, was "nmapgui-1.0.2.src.tar", fro
 ```
 nmapgui-1.0.2.src.tar: POSIX tar archive (GNU
 ```  
-- ``` tar tvf nmapgui-1.0.2.src.tar | less ``` - to see content of the archive. 
+- ``` tar tvf nmapgui-1.0.2.src.tar | less ``` - to see content of the archive.
+
+###### 13.3 Creating and Compressing Tar Balls
+- ``` tar cvf etc.tar /etc ``` where 
+    - **c** - create
+    - **v** - verbose
+    - **f** - file 
+    - **etc.tar** - name of the archive
+    - **/etc** - what to archive
+*Note: as you can see, there is no any compression and the .tar file is really big* 
+
+- ```gzip etc.tar``` - let's add compression by using **gzip**. 
+- ```gunzip etc.tar.gz``` - to get original file **etc.tar** back
+- ```bzip2 etc.tar ``` - another archiver named **bzip2**
+- ```tar xvf etc.tar.bz2 -C /``` - extract **etc.tar.bz2** to the root directory.
+    - ```-u``` - this option only append files newer than copy in archive
+    - ```-p``` - extract   information   about   file  permissions (default for superuser). What means if you want to save permissions during extraction use this options. That one is default option for root user. But for regular user you need to use **-p** option. 
+
+###### 13.4 Understanding Software Dependencies
+- ``` rpm -ivh nmap-frontend-6.40.noarch.rpm ``` - normal installation of the .rpm package.  
+Dependency issue fixed by **META package handler**:
+    - **apt** - Ubuntu
+    - **yum** - RedHat
+    - **dnf** - Fedora
+    - **zipper** - SUSE
+
+###### 13.5 Managing Libraries
+- ```ldd /usr/bin/passwd``` - run to see which libraries required to run this command. 
+- ``` ldd $(which ls) ``` - to find out is the specific library present.
+```
+linux-vdso.so.1 =>  (0x00007ffdb91f6000)
+        libuser.so.1 => /lib64/libuser.so.1 (0x00007fee9dc39000)
+        libgobject-2.0.so.0 => /lib64/libgobject-2.0.so.0 (0x00007fee9d9e9000)
+        libglib-2.0.so.0 => /lib64/libglib-2.0.so.0 (0x00007fee9d6d3000)
+        libpopt.so.0 => /lib64/libpopt.so.0 (0x00007fee9d4c9000)
+        libpam.so.0 => /lib64/libpam.so.0 (0x00007fee9d2ba000)
+        libpam_misc.so.0 => /lib64/libpam_misc.so.0 (0x00007fee9d0b6000)
+        libaudit.so.1 => /lib64/libaudit.so.1 (0x00007fee9ce8d000)
+        libselinux.so.1 => /lib64/libselinux.so.1 (0x00007fee9cc66000)
+        libpthread.so.0 => /lib64/libpthread.so.0 (0x00007fee9ca4a000)
+        libc.so.6 => /lib64/libc.so.6 (0x00007fee9c67d000)
+        libgmodule-2.0.so.0 => /lib64/libgmodule-2.0.so.0 (0x00007fee9c479000)
+        libcrypt.so.1 => /lib64/libcrypt.so.1 (0x00007fee9c242000)
+        libpcre.so.1 => /lib64/libpcre.so.1 (0x00007fee9bfe0000)
+        libffi.so.6 => /lib64/libffi.so.6 (0x00007fee9bdd8000)
+        libdl.so.2 => /lib64/libdl.so.2 (0x00007fee9bbd4000)
+        libcap-ng.so.0 => /lib64/libcap-ng.so.0 (0x00007fee9b9ce000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007fee9e05f000)
+        libfreebl3.so => /lib64/libfreebl3.so (0x00007fee9b7cb000)
+```
+
+- ```ldconfig``` - to run update of the libraries. 
+- ```ld.so.cache``` - cache of the libraries.
+- ```ld.so.conf.d``` - configuration with path to the cache **ld.so.cache**
+When you run packages install - **ldconfig** runs automatically and solve dependencies problems  
+
+###### 13.6 Managing Packages on Red Hat and SUSE with rpm
+- ```rpm ``` - Red Hat Package manager
+    - ```rpm -qa``` - query all. 
+    - ```rpm -qa | grep http``` - find is **http** installed
+    - ```rpm -qi httpd``` - get information about installed package
+    - ```rpm -ql httpd``` - list of files that installed from this package
+    - ```rpm -qc httpd``` - list of configuration files
+    - ```rpm -qd httpd``` - get documentation
+    - ```rpm -qpi nmap-fronted-6.noarch.rpm``` - get information about package that not installed yet. 
+    - ```rpm -qp --script nmap-fronted-6.noarch.rpm``` - get information about scripts which will be executed during package installation. 
+    - ```rpm -qf /etc/nanorc ``` - will show where file comes from
+    - ```rpm -qi nano``` - if you don't where file comes from. 
+    - ```rpm -ql nano``` - files from the package.
+
+###### 13.7 Managing Packages on Ubuntu with dpkg
+- ```dpkg``` - debian package manager
+    - ```dpkg --get-selections``` - list all installed packages
+    - ```dpkg -L vim``` - show files in the package
+    - ```dpkg -S /usr/bin/eject``` - from which package file comes from. 
+    - ```dpkg -S eject ``` - same as above command
+    - ```dpkg -p vim``` - get information about content of the package
+
+###### 13.8 Using the yum Meta Package Handler
+- ```yum search nmap``` - look if package is available
+- ```cd /etc/yum.repos.d/``` - repository directory.
+```
+-rw-r--r--. 1 root root 1664 Nov 23  2018 CentOS-Base.repo
+-rw-r--r--. 1 root root 1309 Nov 23  2018 CentOS-CR.repo
+-rw-r--r--. 1 root root  649 Nov 23  2018 CentOS-Debuginfo.repo
+-rw-r--r--. 1 root root  314 Nov 23  2018 CentOS-fasttrack.repo
+-rw-r--r--. 1 root root  630 Nov 23  2018 CentOS-Media.repo
+-rw-r--r--. 1 root root 1331 Nov 23  2018 CentOS-Sources.repo
+-rw-r--r--. 1 root root 5701 Nov 23  2018 CentOS-Vault.repo
+```  
+
+- ```yum info nmap``` - get some information about package **nmap**
+- ```yum install nmap-frontend``` - yum is going to resolve dependencies. During installation **transaction check** runs to see if the dependencies are available in repository for installing package.
+- ```yum provides */sealert``` - to find out which package provides **/sealert**
+```
+setroubleshoot-server-3.2.30-3.el7.x86_64 : SELinux troubleshoot server
+Repo        : base
+Matched from:
+Filename    : /usr/bin/sealert
+```
+
+- ```yum remove kernel``` - couldn't be removed because **kernel** is running and protected package. 
+- ```yum remove bash``` - same for **bash**, dependencies will be processed and hit some protected packages like **systemd** and **yum**. So remove is not possible.
+- ```yumdownloader vsftp``` - if you want only download package, without installation and then run ```rpm -qp --scripts vsftp``` - to see which scripts will be run. So you can analize there is nothing nasty inside. 
+
+###### 13.9 Using the apt Meta Package Handler
+- ``` apt-cache search ldap ``` - search for packages that contain **ldap** name in it. 
+- ```apt-cache depends ldap-utils``` - get dependencies lists of the **ldap-utils**
+- ```apt-cache rdepends ldap-utils``` - get reverse dependencies of the package
+- ```apt-cache stats``` - get statistics about the packages
+- ```apt-get update``` - to synchronise your repository with online database. 
+- ```apt-get install nmap``` - install **nmap**. Which packages will be installed.
+- ```apt-get check``` - check if there any broken installation
+- ```apt-get clean``` - cleans package cache
+
+###### 13.10 Using the zypper Meta Package Handler
+- ```zypper search nmap``` - search for **nmap** package
+- ```zypper install nmap``` - install **nmap** package
+- ```yast``` - packages can be installed from GUI.
+    - software patterns can be used from **yast**.
