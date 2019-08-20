@@ -1209,16 +1209,16 @@ Filename    : /usr/bin/sealert
 ### Lesson 14: Scheduling Tasks
 ###### 14.1 Understanding Linux Task Scheduling
 Three different solutions for running tasks:
-    - ```at```- run task once at specific time
-    - ```crond``` - task scheduler. 
-    - ```timers``` - systemd timer is the same as **crond**
+- ```at```- run task once at specific time
+- ```crond``` - task scheduler. 
+- ```timers``` - systemd timer is the same as **crond**
 
 Most important is **crond** working with configurations file.  
 Main directory of **crond**:  
-    - ```/etc/crontab```
-    - ```/etc/cron.d/``` - you will put your time specific files here, to run them. 
-    - ```crontab -e -u``` - create user specific cron job.  
-        - ```/cron.hourly``` \ 
-        - ```/cron.daily``` - all managed by **anacron**. Helper of cron. 
-        - ```/cron.weekly``` /
-        - ```/cron.monthly``` /
+- ```/etc/crontab```
+- ```/etc/cron.d/``` - you will put your time specific files here, to run them. 
+- ```crontab -e -u``` - create user specific cron job.  
+    - ```/cron.hourly``` \ 
+    - ```/cron.daily``` - all managed by **anacron**. Helper of cron. 
+    - ```/cron.weekly``` /
+    - ```/cron.monthly``` /
