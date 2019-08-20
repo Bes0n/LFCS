@@ -18,6 +18,7 @@ Preparation for Linux Foundation Certified System Administrator
 - [Module 4: Operating Running Systems](#module-4-operating-running-systems)
     - [Lesson 12: Process Management](#lesson-12-process-management)
     - [Lesson 13: Managing Software Packages](#lesson-13-managing-software-packages)
+    - [Lesson 14: Scheduling Tasks](#lesson-14-scheduling-tasks)
 
 
 ## Module 1: Essential Commands
@@ -1108,7 +1109,7 @@ Dependency issue fixed by **META package handler**:
     - **apt** - Ubuntu
     - **yum** - RedHat
     - **dnf** - Fedora
-    - **zipper** - SUSE
+    - **zypper** - SUSE
 
 ###### 13.5 Managing Libraries
 - ```ldd /usr/bin/passwd``` - run to see which libraries required to run this command. 
@@ -1204,3 +1205,20 @@ Filename    : /usr/bin/sealert
 - ```zypper install nmap``` - install **nmap** package
 - ```yast``` - packages can be installed from GUI.
     - software patterns can be used from **yast**.
+
+### Lesson 14: Scheduling Tasks
+###### 14.1 Understanding Linux Task Scheduling
+Three different solutions for running tasks:
+    - ```at```- run task once at specific time
+    - ```crond``` - task scheduler. 
+    - ```timers``` - systemd timer is the same as **crond**
+
+Most important is **crond** working with configurations file.  
+Main directory of **crond**:
+    - ```/etc/crontab```
+    - ```/etc/cron.d/``` - you will put your time specific files here, to run them. 
+    - ```crontab -e -u``` - create user specific cron job.
+        - ```/cron.hourly``` \ 
+        - ```/cron.daily``` - all managed by **anacron**. Helper of cron. 
+        - ```/cron.weekly``` /
+        - ```/cron.monthly``` /
