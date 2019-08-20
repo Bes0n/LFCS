@@ -1214,10 +1214,10 @@ Three different solutions for running tasks:
     - ```timers``` - systemd timer is the same as **crond**
 
 Most important is **crond** working with configurations file.  
-Main directory of **crond**:
+Main directory of **crond**:  
     - ```/etc/crontab```
     - ```/etc/cron.d/``` - you will put your time specific files here, to run them. 
-    - ```crontab -e -u``` - create user specific cron job.
+    - ```crontab -e -u``` - create user specific cron job.  
         - ```/cron.hourly``` \ 
         - ```/cron.daily``` - all managed by **anacron**. Helper of cron. 
         - ```/cron.weekly``` /
