@@ -19,6 +19,7 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 12: Process Management](#lesson-12-process-management)
     - [Lesson 13: Managing Software Packages](#lesson-13-managing-software-packages)
     - [Lesson 14: Scheduling Tasks](#lesson-14-scheduling-tasks)
+    - [Lesson 15: Configuring Logging](#lesson-15-configuring-logging)
 
 
 ## Module 1: Essential Commands
@@ -1222,3 +1223,100 @@ Main directory of **crond**:
     - ```/cron.daily``` - all managed by **anacron**. Helper of cron. 
     - ```/cron.weekly``` /
     - ```/cron.monthly``` /
+
+###### 14.2 Scheduling Tasks with Cron
+- ```vim /etc/crontab``` - get information about **crontab**
+```
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+
+# For details see man 4 crontabs
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name  command to be executed
+```
+
+- ```crontab -e``` - open **crontab** for current user
+- ```*/10 * * * 1-5 logger its a weekday``` - create a job to run every 10 minutes, every hour, every day of month, every month, 5 days in a week. 
+- ```crontab -e -u define user``` - create crontad for defined user
+- ```crontab --help```
+```
+Usage:
+ crontab [options] file
+ crontab [options]
+ crontab -n [hostname]
+
+Options:
+ -u <user>  define user
+ -e         edit user's crontab
+ -l         list user's crontab
+ -r         delete user's crontab
+ -i         prompt before deleting
+ -n <host>  set host in cluster to run users' crontabs
+ -c         get host in cluster to run users' crontabs
+ -s         selinux context
+ -x <mask>  enable debugging
+```
+
+- ```cd /etc/cron.d/``` - directory used by **rpm** packages. If installed package involves some tasks to start automatically. It will be dropped in **cron.d** directory
+- ```cd ../cron.daily/``` - cron time directories. Here you can drop shell scripts. **anacron** helper used there, no need to enter time in your scripts.  
+
+```
+[root@centos etc]# cd /etc/cron.
+cron.d/       cron.daily/   cron.hourly/  cron.monthly/ cron.weekly/
+```
+
+###### 14.3 Using Systemd Timers to Schedule Tasks
+- ```cd /usr/lib/systemd/system``` - directory where **systemd** creates it's **unit files**. Unit files contain **services**, but other things as well. For instance - **timers**  
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img20.JPG)
+
+Timers consist of 2 files:
+- ```fstrim.service``` - what to run.
+- ```fstrim.timer``` - when to run.  
+
+We need to use **systemctl** to activate this timer:
+- ```systemctl status fstrim.timer``` - currently this timer in **disabled** status.
+- ```systemctl daemon-reload``` - reload daemon if you made some changes in **systemd** service or timers. 
+- ```systemctl start fstrim.timer``` - activate timer. 
+- ```systemctl enable fstrim.timer``` - enable timer, to run at least once in a week, as scheduled. 
+
+###### 14.4 Scheduling Tasks with at
+- ``` systemctl status atd ``` - get status of the **at** daemon.
+
+```
+[root@centos system]# systemctl status atd
+● atd.service - Job spooling tools
+   Loaded: loaded (/usr/lib/systemd/system/atd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Wed 2019-08-21 15:09:09 CEST; 1s ago
+ Main PID: 12369 (atd)
+   CGroup: /system.slice/atd.service
+           └─12369 /usr/sbin/atd -f
+
+Aug 21 15:09:09 centos.example.com systemd[1]: Started Job spooling tools.
+```
+
+- ``` at 11:00 ``` - start scheduling task for 11:00
+- ```at> mail -s hello root < .``` - you can schedule anything you want in this prompty. 
+- ```Ctrl + D``` - when you done, just press it to leave **at prompt**
+- ``` at teatime ``` - schedule job for **4:00 PM**
+- ``` atq ``` - see which jobs have been scheduled by **at**
+- ```atrm 1 ``` - remove scheduled job with following number. 
+
+### Lesson 15: Configuring Logging
+###### 15.1 Understanding Linux Log Solutions
+- **syslog** - original solution for linux logging. 
+    - ```/var/log``` - directory where logs stored as a different files. 
+    - ```syslog-ng``` - first improvement of the **syslog**
+    - ```rsyslog``` - completely backward of the **syslog** and writing information to **/var/log**
+    - ```systemd-journald``` - runtime log, by default it's not stored anywhere. Will be disappear after reboot. 
+    - ```logrotate``` - helper service for **/var/log**, to control logs don't grow too big. You can rotate logs if they get too big or too old or whatever. 
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img21.JPG)
