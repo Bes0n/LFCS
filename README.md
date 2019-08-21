@@ -1274,7 +1274,7 @@ cron.d/       cron.daily/   cron.hourly/  cron.monthly/ cron.weekly/
 ```
 
 ###### 14.3 Using Systemd Timers to Schedule Tasks
-- ```cd /usr/lib/systemd/system``` - directory where **systemd** creates it's **unit files**. Unit files contain **services**, but other things as well. For instance - **timers**  
+- ```cd /usr/lib/systemd/system/``` - directory where **systemd** creates it's **unit files**. Unit files contain **services**, but other things as well. For instance - **timers**  
 
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img20.JPG)
 
@@ -1320,3 +1320,67 @@ Aug 21 15:09:09 centos.example.com systemd[1]: Started Job spooling tools.
     - ```logrotate``` - helper service for **/var/log**, to control logs don't grow too big. You can rotate logs if they get too big or too old or whatever. 
 
 ![img](https://github.com/Bes0n/LFCS/blob/master/images/img21.JPG)
+
+###### 15.2 Working with systemd journald
+- ```systemctl status sshd``` - get information about service. We can see there all relevant logs gathered by **journald** recently. 
+
+```
+● sshd.service - OpenSSH server daemon
+   Loaded: loaded (/usr/lib/systemd/system/sshd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Mon 2019-08-19 11:22:16 CEST; 2 days ago
+     Docs: man:sshd(8)
+           man:sshd_config(5)
+ Main PID: 993 (sshd)
+   CGroup: /system.slice/sshd.service
+           └─993 /usr/sbin/sshd -D
+
+Aug 19 11:22:16 centos.example.com systemd[1]: Starting OpenSSH server daemon...
+Aug 19 11:22:16 centos.example.com sshd[993]: Server listening on 0.0.0.0 port 22.
+Aug 19 11:22:16 centos.example.com sshd[993]: Server listening on :: port 22.
+Aug 19 11:22:16 centos.example.com systemd[1]: Started OpenSSH server daemon.
+Aug 19 11:23:32 centos.example.com sshd[1248]: Accepted password for student from...2Aug 19 15:00:20 centos.example.com sshd[1399]: Accepted password for student from...2Aug 19 15:35:50 centos.example.com sshd[1504]: Accepted password for student from...2Aug 21 11:53:06 centos.example.com sshd[3065]: Connection reset by 10.0.2.2 port ...]Aug 21 12:00:52 centos.example.com sshd[3070]: Accepted password for student from...2
+```
+
+- ```journalctl``` - opens file system's journal. By default it kept in memory. It's going to be truncated when becomes too big.  
+
+```
+[root@centos log]# journalctl
+_AUDIT_LOGINUID=             __MONOTONIC_TIMESTAMP=
+_AUDIT_SESSION=              _PID=
+_BOOT_ID=                    PRIORITY=
+_CMDLINE=                    __REALTIME_TIMESTAMP=
+CODE_FILE=                   _SELINUX_CONTEXT=
+CODE_FUNC=                   _SOURCE_REALTIME_TIMESTAMP=
+CODE_LINE=                   SYSLOG_FACILITY=
+_COMM=                       SYSLOG_IDENTIFIER=
+COREDUMP_EXE=                SYSLOG_PID=
+__CURSOR=                    _SYSTEMD_CGROUP=
+ERRNO=                       _SYSTEMD_OWNER_UID=
+_EXE=                        _SYSTEMD_SESSION=
+_GID=                        _SYSTEMD_UNIT=
+_HOSTNAME=                   _TRANSPORT=
+_KERNEL_DEVICE=              _UDEV_DEVLINK=
+_KERNEL_SUBSYSTEM=           _UDEV_DEVNODE=
+_MACHINE_ID=                 _UDEV_SYSNAME=
+MESSAGE=                     _UID=
+MESSAGE_ID=
+```  
+
+*Note: If you want to search for specific item use tab and search for it*
+
+- ```journalctl _PID=1``` - search for logs related to the **PID** number **1**
+- ```mkdir -p /var/log/journal``` - **journalctl** is not persistent. To make it persistent we need to create directory **journal** in **/var/log** dir.  
+After creation of this directory, we will have directory created in **journal** dir.  
+```
+[student@centos journal]$ ls -l
+total 0
+drwxr-sr-x+ 2 root systemd-journal 53 Aug 21 16:33 2c6eb2cb883142de82ccc9f4448ded7d
+
+[student@centos 2c6eb2cb883142de82ccc9f4448ded7d]$ ls -l
+total 24584
+-rw-r-----+ 1 root systemd-journal 16777216 Aug 21 16:39 system.journal
+-rw-r-----+ 1 root root             8388608 Aug 21 16:35 user-1000.journal
+```  
+
+There is also configuration file behind of this, which located in **/etc/system/journald.conf**. Here you can specify configuration for your journal. Size, what to store, storage behaviour and so on. 
+
