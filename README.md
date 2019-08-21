@@ -1338,7 +1338,7 @@ Aug 19 11:22:16 centos.example.com systemd[1]: Starting OpenSSH server daemon...
 Aug 19 11:22:16 centos.example.com sshd[993]: Server listening on 0.0.0.0 port 22.
 Aug 19 11:22:16 centos.example.com sshd[993]: Server listening on :: port 22.
 Aug 19 11:22:16 centos.example.com systemd[1]: Started OpenSSH server daemon.
-Aug 19 11:23:32 centos.example.com sshd[1248]: Accepted password for student from...2Aug 19 15:00:20 centos.example.com sshd[1399]: Accepted password for student from...2Aug 19 15:35:50 centos.example.com sshd[1504]: Accepted password for student from...2Aug 21 11:53:06 centos.example.com sshd[3065]: Connection reset by 10.0.2.2 port ...]Aug 21 12:00:52 centos.example.com sshd[3070]: Accepted password for student from...2
+Aug 19 11:23:32 centos.example.com sshd[1248]: Accepted password for student from...
 ```
 
 - ```journalctl``` - opens file system's journal. By default it kept in memory. It's going to be truncated when becomes too big.  
@@ -1384,3 +1384,10 @@ total 24584
 
 There is also configuration file behind of this, which located in **/etc/system/journald.conf**. Here you can specify configuration for your journal. Size, what to store, storage behaviour and so on. 
 
+###### 15.3 Understanding rsyslogd
+Essence of line in **rsyslog** consist of:
+- **facility** - pre-defined set of services. For example: **authpriv**, **kern**, **mail**
+- **priority** - how bad it is, what is happening. For example: **emerg**, **crit**, **debug**
+- **destination** - write it to specific destination. For example: **/var/log/..**, **:omusrmsg:** (output module of rsyslog).
+
+###### 15.4 Configuring rsyslogd
