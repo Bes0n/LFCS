@@ -1391,3 +1391,124 @@ Essence of line in **rsyslog** consist of:
 - **destination** - write it to specific destination. For example: **/var/log/..**, **:omusrmsg:** (output module of rsyslog).
 
 ###### 15.4 Configuring rsyslogd
+- ```systemctl status rsyslog``` - get status of the **rsyslog**
+- ```/etc/rsyslog.conf``` and ```/etc/rsyslog.d/``` - confifguration items of **rsyslog**
+- ```vim /etc/rsyslog.conf``` - has important settings.  
+
+```
+#### MODULES ####
+
+# The imjournal module bellow is now used as a message source instead of imuxsock.
+$ModLoad imuxsock # provides support for local system logging (e.g. via logger command)
+$ModLoad imjournal # provides access to the systemd journal
+```  
+
+You can receive logs from other servers if you enable these options:  
+```
+# Provides UDP syslog reception
+#$ModLoad imudp
+#$UDPServerRun 514
+
+# Provides TCP syslog reception
+#$ModLoad imtcp
+#$InputTCPServerRun 514
+```
+
+Let's look for the rules:  
+```
+#### RULES ####
+
+# Log all kernel messages to the console.
+# Logging much else clutters up the screen.
+#kern.*                                                 /dev/console
+
+# Log anything (except mail) of level info or higher.
+# Don't log private authentication messages!
+*.info;mail.none;authpriv.none;cron.none                /var/log/messages
+
+# The authpriv file has restricted access.
+authpriv.*                                              /var/log/secure
+
+# Log all the mail messages in one place.
+mail.*                                                  -/var/log/maillog
+
+
+# Log cron stuff
+cron.*                                                  /var/log/cron
+
+# Everybody gets emergency messages
+*.emerg                                                 :omusrmsg:*
+
+# Save news errors of level crit and higher in a special file.
+uucp,news.crit                                          /var/log/spooler
+
+# Save boot messages also to boot.log
+local7.*                                                /var/log/boot.log
+```
+
+- ```crit.*   /var/log/critical``` - create your own rule for **critical** events. 
+- ```logger op crit CRITICAL SITUATION``` - write to the **syslog** with **crit** option. 
+
+###### 15.5 Rotating Log Files with logrotate
+- ```/etc/cron.daily/logrotate``` - we have **logrotate** script in **cron.daily** directory 
+```
+#!/bin/sh
+
+/usr/sbin/logrotate -s /var/lib/logrotate/logrotate.status /etc/logrotate.conf
+EXITVALUE=$?
+if [ $EXITVALUE != 0 ]; then
+    /usr/bin/logger -t logrotate "ALERT exited abnormally with [$EXITVALUE]"
+fi
+exit 0
+```
+
+- ```/etc/logrotate.conf``` - configuration file of **logrotate**
+```
+ see "man logrotate" for details
+# rotate log files weekly
+weekly
+
+# keep 4 weeks worth of backlogs
+rotate 4
+
+# create new (empty) log files after rotating old ones
+create
+
+# use date as a suffix of the rotated file
+dateext
+
+# uncomment this if you want your log files compressed
+#compress
+
+# RPM packages drop log rotation information into this directory
+include /etc/logrotate.d
+
+# no packages own wtmp and btmp -- we'll rotate them here
+/var/log/wtmp {
+    monthly
+    create 0664 root utmp
+        minsize 1M
+    rotate 1
+}
+
+/var/log/btmp {
+    missingok
+    monthly
+    create 0600 root utmp
+    rotate 1
+}
+
+# system-specific logs may be also be configured here.
+```
+
+- ``` /etc/logrotate.d/ ``` - you can put your own configuration in that directory. 
+```
+[root@centos logrotate.d]# ls -l
+total 20
+-rw-r--r--. 1 root root  91 Apr 10  2018 bootlog
+-rw-r--r--. 1 root root 160 Sep 15  2017 chrony
+-rw-r--r--. 1 root root 224 Oct 30  2018 syslog
+-rw-r--r--. 1 root root 100 Oct 31  2018 wpa_supplicant
+-rw-r--r--. 1 root root 103 Nov  5  2018 yum
+```
+
