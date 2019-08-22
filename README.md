@@ -21,7 +21,7 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 14: Scheduling Tasks](#lesson-14-scheduling-tasks)
     - [Lesson 15: Configuring Logging](#lesson-15-configuring-logging)
     - [Lesson 16: Basic Kernel Management](#lesson-16-basic-kernel-management)
-
+    - [Lesson 17: Managing the Boot Process](#lesson-17-managing-the-boot-process)
 
 ## Module 1: Essential Commands
 
@@ -1734,7 +1734,7 @@ DirectMap2M:      995328 kB
 ```  
 *Note: if you type ```ps aux```, system going to look in ```/proc``` directory*
 
-``` cd /proc/sys ``` - this directory contains **kernel's tunable**. Which can be switchen **on** or **off**
+- ``` cd /proc/sys ``` - this directory contains **kernel's tunable**. Which can be switchen **on** or **off**
 ```
 [root@centos sys]# ls -l
 total 0
@@ -1748,3 +1748,40 @@ dr-xr-xr-x. 1 root root 0 Aug 21 16:35 net
 dr-xr-xr-x. 1 root root 0 Aug 22 11:58 user
 dr-xr-xr-x. 1 root root 0 Aug 21 16:36 vm
 ```
+
+- ```cd /proc/sys/net/ipv6/conf/all``` - let's configure **ipv6** protocol. Where **all** means that configuration will be applied for all **network interfaces** 
+
+```
+[root@centos all]# ls
+accept_dad                  force_mld_version                  optimistic_dad
+accept_ra                   force_tllao                        proxy_ndp
+accept_ra_defrtr            forwarding                         regen_max_retry
+accept_ra_pinfo             hop_limit                          router_probe_interval
+accept_ra_rt_info_max_plen  keep_addr_on_down                  router_solicitation_delay
+accept_ra_rtr_pref          max_addresses                      router_solicitation_interval
+accept_redirects            max_desync_factor                  router_solicitations
+accept_source_route         mc_forwarding                      stable_secret
+autoconf                    mldv1_unsolicited_report_interval  temp_prefered_lft
+dad_transmits               mldv2_unsolicited_report_interval  temp_valid_lft
+disable_ipv6                mtu                                use_optimistic
+enhanced_dad                ndisc_notify                       use_tempaddr
+```
+
+- ``` echo 1 > disable_ipv6 ``` - disable **ipv6** protocol. You can't use **vim** on that file. You can only use **echo** for changing configuration in **kernel interface**. But after reboot this settings will be reverted back.
+
+- ``` /etc/sysctl.conf ``` - to find out where **sysctl** configuration stored. Subdirectory used to store configuration. 
+```
+# sysctl settings are defined through files in
+# /usr/lib/sysctl.d/, /run/sysctl.d/, and /etc/sysctl.d/.
+
+# To override a whole file, create a new file with the same in
+# /etc/sysctl.d/ and put new settings there. To override
+only specific settings, add a file with a lexically later
+# name in /etc/sysctl.d/ and put new settings there.
+```
+
+- ``` echo net.ipv6.conf.all.disable_ipv6 = 1 > ipv6.conf ``` - now, next time after reboot, parameter will be applied. IPv6 protocol will be disabled. 
+
+- ``` sysctl -a ``` - list all tunable options for **kernel**
+
+### Lesson 17: Managing the Boot Process
