@@ -20,6 +20,7 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 13: Managing Software Packages](#lesson-13-managing-software-packages)
     - [Lesson 14: Scheduling Tasks](#lesson-14-scheduling-tasks)
     - [Lesson 15: Configuring Logging](#lesson-15-configuring-logging)
+    - [Lesson 16: Basic Kernel Management](#lesson-16-basic-kernel-management)
 
 
 ## Module 1: Essential Commands
@@ -1512,3 +1513,238 @@ total 20
 -rw-r--r--. 1 root root 103 Nov  5  2018 yum
 ```
 
+### Lesson 16: Basic Kernel Management
+###### 16.1 Understanding the Role of the Linux Kernel
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img22.JPG)
+
+Kernel => Drivers(modules) => Hardware  
+- ``` SYSCALLS ``` - option to interact with **kernel**. 
+- ``` /proc ``` - **kernel** interface.
+
+###### 16.2 Working with Kernel Modules
+- ```lsmod``` - list **kernel modules**. Modules loaded automatically when they're needed. 
+
+```
+Module                  Size  Used by
+nf_conntrack_ipv4      15053  2
+nf_defrag_ipv4         12729  1 nf_conntrack_ipv4
+xt_conntrack           12760  2
+nf_conntrack          137239  2 xt_conntrack,nf_conntrack_ipv4
+iptable_filter         12810  1
+intel_pmc_core         17748  0
+intel_powerclamp       14451  0
+iosf_mbi               15582  0
+crc32_pclmul           13133  0
+snd_intel8x0           38199  0
+snd_ac97_codec        130556  1 snd_intel8x0
+ghash_clmulni_intel    13273  0
+ac97_bus               12730  1 snd_ac97_codec
+snd_seq                62663  0
+snd_seq_device         14356  1 snd_seq
+ppdev                  17671  0
+snd_pcm               105708  2 snd_ac97_codec,snd_intel8x0
+aesni_intel           189415  0
+lrw                    13286  1 aesni_intel
+gf128mul               15139  1 lrw
+glue_helper            13990  1 aesni_intel
+ablk_helper            13597  1 aesni_intel
+cryptd                 21190  3 ghash_clmulni_intel,aesni_intel,ablk_helper
+sg                     40721  0
+snd_timer              29912  2 snd_pcm,snd_seq
+pcspkr                 12718  0
+snd                    83815  6 snd_ac97_codec,snd_intel8x0,snd_timer,snd_pcm,snd_seq,snd_seq_device
+parport_pc             28205  0
+video                  24538  0
+parport                46395  2 ppdev,parport_pc
+i2c_piix4              22401  0
+soundcore              15047  1 snd
+ip_tables              27126  1 iptable_filter
+xfs                   996949  2
+libcrc32c              12644  2 xfs,nf_conntrack
+sr_mod                 22416  0
+cdrom                  42556  1 sr_mod
+ata_generic            12923  0
+sd_mod                 46281  3
+crc_t10dif             12912  1 sd_mod
+crct10dif_generic      12647  0
+pata_acpi              13053  0
+vmwgfx                276430  1
+drm_kms_helper        179394  1 vmwgfx
+syscopyarea            12529  1 drm_kms_helper
+sysfillrect            12701  1 drm_kms_helper
+sysimgblt              12640  1 drm_kms_helper
+fb_sys_fops            12703  1 drm_kms_helper
+ttm                   114635  1 vmwgfx
+ahci                   34056  2
+ata_piix               35052  0
+drm                   429744  4 ttm,drm_kms_helper,vmwgfx
+libahci                31992  1 ahci
+libata                243133  5 ahci,pata_acpi,libahci,ata_generic,ata_piix
+e1000                 137586  0
+crct10dif_pclmul       14307  1
+crct10dif_common       12595  3 crct10dif_pclmul,crct10dif_generic,crc_t10dif
+crc32c_intel           22094  1
+drm_panel_orientation_quirks    12957  1 drm
+serio_raw              13434  0
+dm_mirror              22289  0
+dm_region_hash         20813  1 dm_mirror
+dm_log                 18411  2 dm_region_hash,dm_mirror
+dm_mod                124461  8 dm_log,dm_mirror
+```
+
+- ``` modprobe -r cdrom ``` - unload module **cdrom**. 
+```
+[root@centos log]# lsmod | grep cdrom
+cdrom                  42556  1 sr_mod
+```
+- ```modprobe -r sr_mod ``` - we need to unload **sr_mod** before unloading **cdrom** module. 
+- ```modprobe cdrom``` - load **cdrom** module. 
+
+```
+root@centos log]# lsmod | grep cdrom
+cdrom                  42556  0
+```
+
+- ``` modinfo cdrom ``` - get information about **cdrom** module
+```
+filename:       /lib/modules/3.10.0-957.27.2.el7.x86_64/kernel/drivers/cdrom/cdrom.ko.xz
+license:        GPL
+retpoline:      Y
+rhelversion:    7.6
+srcversion:     B63448BA9456F320F84B102
+depends:
+intree:         Y
+vermagic:       3.10.0-957.27.2.el7.x86_64 SMP mod_unload modversions
+signer:         CentOS Linux kernel signing key
+sig_key:        52:0A:4E:2D:9D:55:3E:F8:42:01:C1:88:B8:7F:E5:1B:9D:E1:1A:5E
+sig_hashalgo:   sha256
+parm:           debug:bool
+parm:           autoclose:bool
+parm:           autoeject:bool
+parm:           lockdoor:bool
+parm:           check_media_type:bool
+parm:           mrw_format_restart:bool
+```
+
+- ``` modprobe cdrom autoclose=1 ``` - parameters can be set while loading module. In this example we set **autoclose=1**. 
+- ```dmesg``` - get information about working modules 
+- ```/etc/modprobe.d/``` - configuration items of modprobe. Here we can set up options for modules, to make them loaded automatically
+- ``` echo options cdrom autoclose=1 > cdrom.conf ``` - specific parameter will be automatically activated for **cdrom** module.
+```
+[root@centos modprobe.d]# ls -l
+total 16
+-rw-r--r--. 1 root root  26 Aug 22 11:49 cdrom.conf
+-rw-r--r--. 1 root root 215 Jul 29 19:55 dccp-blacklist.conf
+-rw-r--r--. 1 root root 166 Oct 30  2018 firewalld-sysctls.conf
+-rw-r--r--. 1 root root 674 Jul  4  2018 tuned.conf
+```
+
+###### 16.3 Optimizing the Kernel through proc
+- ``` cd /proc ``` - **proc** file system. Infterface of the **linux kernel**
+- ``` cat partitions ``` - get information about **disk devices** that currently being used
+```
+[root@centos proc]# cat partitions
+major minor  #blocks  name
+
+   8        0    8388608 sda
+   8        1    1048576 sda1
+   8        2    7339008 sda2
+ 253        0    6496256 dm-0
+ 253        1     839680 dm-1
+```
+
+- ``` cat cpuinfo ``` - get information **CPU's** on the system. 
+```
+[root@centos proc]# cat cpuinfo
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 78
+model name      : Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz
+stepping        : 3
+cpu MHz         : 2399.988
+cache size      : 3072 KB
+physical id     : 0
+siblings        : 1
+core id         : 0
+cpu cores       : 1
+apicid          : 0
+initial apicid  : 0
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 22
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc eagerfpu pni pclmulqdq monitor ssse3 cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx rdrand hypervisor lahf_lm abm 3dnowprefetch fsgsbase avx2 invpcid rdseed clflushopt flush_l1d
+bogomips        : 4799.97
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 39 bits physical, 48 bits virtual
+power management:
+```
+
+- ``` cat meminfo ``` - get information about **memory usage**
+```
+[root@centos proc]# cat meminfo
+MemTotal:        1014956 kB
+MemFree:          769008 kB
+MemAvailable:     760872 kB
+Buffers:            2108 kB
+Cached:           105036 kB
+SwapCached:            0 kB
+Active:            72776 kB
+Inactive:          79720 kB
+Active(anon):      45572 kB
+Inactive(anon):      300 kB
+Active(file):      27204 kB
+Inactive(file):    79420 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:        839676 kB
+SwapFree:         839676 kB
+Dirty:               188 kB
+Writeback:             0 kB
+AnonPages:         45384 kB
+Mapped:            33076 kB
+Shmem:               520 kB
+Slab:              43096 kB
+SReclaimable:      20028 kB
+SUnreclaim:        23068 kB
+KernelStack:        1760 kB
+PageTables:         4272 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     1347152 kB
+Committed_AS:     249468 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:       27108 kB
+VmallocChunk:   34359706624 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:     10240 kB
+CmaTotal:              0 kB
+CmaFree:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:       53184 kB
+DirectMap2M:      995328 kB
+```  
+*Note: if you type ```ps aux```, system going to look in ```/proc``` directory*
+
+``` cd /proc/sys ``` - this directory contains **kernel's tunable**. Which can be switchen **on** or **off**
+```
+[root@centos sys]# ls -l
+total 0
+dr-xr-xr-x. 1 root root 0 Aug 22 11:58 abi
+dr-xr-xr-x. 1 root root 0 Aug 21 16:38 crypto
+dr-xr-xr-x. 1 root root 0 Aug 22 11:58 debug
+dr-xr-xr-x. 1 root root 0 Aug 22 11:58 dev
+dr-xr-xr-x. 1 root root 0 Aug 21 16:35 fs
+dr-xr-xr-x. 1 root root 0 Aug 21 16:35 kernel
+dr-xr-xr-x. 1 root root 0 Aug 21 16:35 net
+dr-xr-xr-x. 1 root root 0 Aug 22 11:58 user
+dr-xr-xr-x. 1 root root 0 Aug 21 16:36 vm
+```
