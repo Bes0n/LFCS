@@ -1787,13 +1787,13 @@ only specific settings, add a file with a lexically later
 ### Lesson 17: Managing the Boot Process
 ###### 17.1 Understanding the Linux Boot Procedure
 Boot procedure:
-    1. **POST** - Power On Self Test
-    2. **DISK** - disk found after test. 
-    3. **BOOTLOADER** - responsible for loading Kernel.
-    4. **KERNEL** - Kernel going to load init. 
-    5. **INIT/SYSTEMD** - Init (systemd) will load services 
-    6. **SERVICES** - after services loaded, we will have shell presented
-    7. **SHELL**
+1. **POST** - Power On Self Test
+2. **DISK** - disk found after test. 
+3. **BOOTLOADER** - responsible for loading Kernel.
+4. **KERNEL** - Kernel going to load init. 
+5. **INIT/SYSTEMD** - Init (systemd) will load services 
+6. **SERVICES** - after services loaded, we will have shell presented
+7. **SHELL**
   
 Bootloader:
 - **LILO** - Linux Loader
