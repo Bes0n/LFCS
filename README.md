@@ -417,7 +417,7 @@ As we understand number **7** is a sum of **4**(read) + **2**(write)+ **1**(exec
 
 **6** means that group will have **4**(read) and **2**(write) permissions
 
-**0** menas that others will don't have any permissions for that file 
+**0** means that others will don't have any permissions for that file 
 
 ###### 7.2 Managing Basic Linux Permissions
 - ``` chgrp  sales mydirectory ``` - make group **sales** as an owner of **mydirectory** directory
@@ -1867,3 +1867,47 @@ GRUB_DISABLE_RECOVERY="true"
 - ```passwd``` - set new password of the root, in case you lost it. 
 - ``` touch .autorelabel``` - for **CentOS** to avoid SElinux mess up with your system you have to run this command. **Ubuntu** and **SUSE** don't require this option.
 - ```exit``` - to exit from chroot, ``` reboot ``` - you can safely reboot after that. 
+
+###### 17.4 Understanding systemd
+- ```/usr/lib/systemd/``` - main configuration directory. You will find main components of **systemd**
+```
+[root@centos systemd]# ls
+catalog                systemd-cryptsetup         systemd-shutdown
+import-pubring.gpg     systemd-fsck               systemd-shutdownd
+ntp-units.d            systemd-hibernate-resume   systemd-sleep
+rhel-autorelabel       systemd-hostnamed          systemd-socket-proxyd
+rhel-configure         systemd-importd            systemd-sysctl
+rhel-dmesg             systemd-initctl            systemd-sysv-install
+rhel-domainname        systemd-journald           systemd-timedated
+rhel-import-state      systemd-localed            systemd-udevd
+rhel-loadmodules       systemd-logind             systemd-update-done
+rhel-readonly          systemd-machined           systemd-update-utmp
+system                 systemd-machine-id-commit  systemd-user-sessions
+systemd                systemd-modules-load       systemd-vconsole-setup
+systemd-ac-power       systemd-pull               system-generators
+systemd-activate       systemd-quotacheck         system-preset
+systemd-backlight      systemd-random-seed        system-shutdown
+systemd-binfmt         systemd-readahead          system-sleep
+systemd-bootchart      systemd-remount-fs         user
+systemd-cgroups-agent  systemd-reply-password     user-generators
+systemd-coredump       systemd-rfkill             user-preset
+```
+
+- ```/usr/lib/systemd/system``` - persistent part of configuration of your operating system. This directory contains **unit** files
+    - ```tmp.service``` - used to start **services**
+    - ```tmp.mount``` - used to initialize **file system**
+    - ```nss-lookup.target``` - **target** means groups of **unit files**
+    - all files in **system** directory is **static**, what meant **not be changed** by system administrator. 
+- ```/etc/systemd``` - so **static** part of configuration should be in **/usr/lib** and **dynamic** part of configuration should be in **/etc/systemd**
+    - ```/etc/systemd/system/``` - can be found here also. 
+    ```
+    drwxr-xr-x. 2 root root   81 Aug 12 17:29 basic.target.wants
+    drwxr-xr-x. 2 root root   87 Jul 17 14:55 default.target.wants
+    drwxr-xr-x. 2 root root   32 Jul 17 14:55 getty.target.wants
+    drwxr-xr-x. 2 root root   35 Jul 17 14:55 local-fs.target.wants
+    drwxr-xr-x. 2 root root 4096 Aug 21 15:08 multi-user.target.wants
+    drwxr-xr-x. 2 root root   48 Jul 17 14:55 network-online.target.wants
+    drwxr-xr-x. 2 root root   29 Jul 17 14:55 sockets.target.wants
+    drwxr-xr-x. 2 root root  217 Jul 17 14:55 sysinit.target.wants
+    drwxr-xr-x. 2 root root   44 Jul 17 14:55 system-update.target.wants
+    ```
