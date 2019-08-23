@@ -1899,8 +1899,8 @@ systemd-coredump       systemd-rfkill             user-preset
     - ```nss-lookup.target``` - **target** means groups of **unit files**
     - all files in **system** directory is **static**, what meant **not be changed** by system administrator. 
 
-####Note: static part of configuration should be in /usr/lib
-####Note: dynamic part of configuration should be in /etc/systemd
+#### Note: static part of configuration should be in /usr/lib
+#### Note: dynamic part of configuration should be in /etc/systemd
 
 - ```/etc/systemd/system/``` - dynamic unit files, which system administrator can modify.  
 ```
