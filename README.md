@@ -1807,3 +1807,22 @@ Systemd takers care of:
 - and more...
 
 ###### 17.2 Configuring the GRUB2 Boot Loader
+Grub loader can be accessed from Grub menu in booting process:   
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img23.JPG)
+
+- **Linux 3.10 7 (Core)** - your current installed Kernel
+- **Linux 0-rescue 7 (Core)** - rescue kernel with minimal options to boot. 
+- If you want to change something in this menu, press **e**. We will be forwarded to the GRUB edit menu. Also we can access **command prompt** by pressing **c**, but there you should really know what you're doing. 
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img24.JPG)
+
+From image above we can see several options:
+- **insmod** - means that GRUB is loading modules. We don't need to modify it.
+- Most important lines come after **linux16** and **initrd16**. Here we can see which kernel is loading. This options used while your system is booting.
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img25.JPG)
+
+- Let's remove options **rhgb** and **quiet**. What means you will not see what's happening while machine is booting. 
+
+- Once we done with modifications press **Ctrl + X** to start. 
