@@ -1826,3 +1826,44 @@ From image above we can see several options:
 - Let's remove options **rhgb** and **quiet**. What means you will not see what's happening while machine is booting. 
 
 - Once we done with modifications press **Ctrl + X** to start. 
+
+- To make persistent change inside of **GRUB** we have to go to the **"/etc/default/grub"** directory. Save your changes. 
+
+```
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR="$(sed 's, release .*$,,g' /etc/system-release)"
+GRUB_DEFAULT=saved
+GRUB_DISABLE_SUBMENU=true
+GRUB_TERMINAL_OUTPUT="console"
+GRUB_CMDLINE_LINUX="crashkernel=auto rd.lvm.lv=centos_centos/root rd.lvm.lv=centos_centos/swap rhgb quiet"
+GRUB_DISABLE_RECOVERY="true"
+```
+
+- To write changes to **GRUB configuration file**, which can be found in ```/boot/grub2/grub.cfg``` you have to run following command: ```grub2-mkconfig -o /boot/grub2/grub.cfg``` which will generate new script according to your changes done in ```/etc/default/grub``` file. 
+
+- ```-rw-r--r--. 1 root root 6215 Aug 23 10:55 grub.cfg``` - from update date, we can see that file has been updated. 
+
+###### 17.3 Troubleshooting Boot Issues
+- Press **e** during boot to access **GRUB** menu.
+- add line ```systemd.unit=rescue.target``` - start operating sysmtem in rescue mode. 
+- ```rescue mode``` - minimal mode, with minimum amount of services loaded. If there is a problem during boot procedure, you can easily fix it.  
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img26.JPG)
+
+- once you done with fixing press **Ctrl + D** to continue booting.
+
+- ```systemd.unit=emergency.target``` - another option which boots a lot faster. 
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img27.JPG)
+
+- ```mount -o remount,rw /``` - puts your filesystem in read-write mode. Because in **emergency** state your file system by default in **read-only** mode
+
+- ``` rd.break ``` - break into the boot procedure at the end of loading. Without entering **root password**. This is useful in case if you don't a **root password**. 
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img28.JPG)
+
+- ``` chroot /sysroot ``` - set root of file system to the contents of **/sysroot** directory. This directory mounted instead of **/**. 
+- ``` mount -o remount,rw / ``` - allow ```read-write``` permission to the ```root``` directory
+- ```passwd``` - set new password of the root, in case you lost it. 
+- ``` touch .autorelabel``` - for **CentOS** to avoid SElinux mess up with your system you have to run this command. **Ubuntu** and **SUSE** don't require this option.
+- ```exit``` - to exit from chroot, ``` reboot ``` - you can safely reboot after that. 
