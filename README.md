@@ -1898,16 +1898,20 @@ systemd-coredump       systemd-rfkill             user-preset
     - ```tmp.mount``` - used to initialize **file system**
     - ```nss-lookup.target``` - **target** means groups of **unit files**
     - all files in **system** directory is **static**, what meant **not be changed** by system administrator. 
-- ```/etc/systemd``` - so **static** part of configuration should be in **/usr/lib** and **dynamic** part of configuration should be in **/etc/systemd**
-    - ```/etc/systemd/system/``` - can be found here also. 
-    ```
-    drwxr-xr-x. 2 root root   81 Aug 12 17:29 basic.target.wants
-    drwxr-xr-x. 2 root root   87 Jul 17 14:55 default.target.wants
-    drwxr-xr-x. 2 root root   32 Jul 17 14:55 getty.target.wants
-    drwxr-xr-x. 2 root root   35 Jul 17 14:55 local-fs.target.wants
-    drwxr-xr-x. 2 root root 4096 Aug 21 15:08 multi-user.target.wants
-    drwxr-xr-x. 2 root root   48 Jul 17 14:55 network-online.target.wants
-    drwxr-xr-x. 2 root root   29 Jul 17 14:55 sockets.target.wants
-    drwxr-xr-x. 2 root root  217 Jul 17 14:55 sysinit.target.wants
-    drwxr-xr-x. 2 root root   44 Jul 17 14:55 system-update.target.wants
-    ```
+
+####Note: static part of configuration should be in /usr/lib
+####Note: dynamic part of configuration should be in /etc/systemd
+
+- ```/etc/systemd/system/``` - dynamic unit files, which system administrator can modify.  
+```
+drwxr-xr-x. 2 root root   81 Aug 12 17:29 basic.target.wants
+drwxr-xr-x. 2 root root   87 Jul 17 14:55 default.target.wants
+drwxr-xr-x. 2 root root   32 Jul 17 14:55 getty.target.wants
+drwxr-xr-x. 2 root root   35 Jul 17 14:55 local-fs.target.wants
+drwxr-xr-x. 2 root root 4096 Aug 21 15:08 multi-user.target.wants
+drwxr-xr-x. 2 root root   48 Jul 17 14:55 network-online.target.wants
+drwxr-xr-x. 2 root root   29 Jul 17 14:55 sockets.target.wants
+drwxr-xr-x. 2 root root  217 Jul 17 14:55 sysinit.target.wants
+drwxr-xr-x. 2 root root   44 Jul 17 14:55 system-update.target.wants
+```
+
