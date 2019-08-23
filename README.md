@@ -1898,10 +1898,9 @@ systemd-coredump       systemd-rfkill             user-preset
     - ```tmp.mount``` - used to initialize **file system**
     - ```nss-lookup.target``` - **target** means groups of **unit files**
     - all files in **system** directory is **static**, what meant **not be changed** by system administrator. 
-  
-Note: 
-- **static part of configuration should be in /usr/lib**
-- **dynamic part of configuration should be in /etc/systemd**
+
+- **Reminder: static part of configuration should be in /usr/lib**
+- **Reminder: dynamic part of configuration should be in /etc/systemd**
 
 - ```/etc/systemd/system/``` - dynamic unit files, which system administrator can modify.  
 ```
@@ -1916,3 +1915,168 @@ drwxr-xr-x. 2 root root  217 Jul 17 14:55 sysinit.target.wants
 drwxr-xr-x. 2 root root   44 Jul 17 14:55 system-update.target.wants
 ```
 
+- ```/run/systemd/``` - what is generated dynamically stored in that directory. In case if you need an overview what **systemd** is doing check this directory **/run/systemd/system**.
+
+###### 17.5 Managing Services through systemd
+- ```systemctl -t help``` - overview of the different **unit** types, that are available. 
+```
+Available unit types:
+service
+socket
+busname
+target
+snapshot
+device
+mount
+automount
+swap
+timer
+path
+slice
+scope
+```
+
+- ``` cd /usr/lib/systemd/system ``` - let's search for **.socket** units 
+
+```
+[root@centos system]# ls *.socket
+dbus.socket           rsyncd.socket           systemd-journald.socket
+dm-event.socket       sshd.socket             systemd-shutdownd.socket
+lvm2-lvmetad.socket   syslog.socket           systemd-udevd-control.socket
+lvm2-lvmpolld.socket  systemd-initctl.socket  systemd-udevd-kernel.socket
+```
+
+- ```cat /usr/lib/systemd/system/sshd.socket``` - let's take a look on content of that file. **sshd.socket** and **sshd.service** walks together. 
+
+```
+[Unit]
+Description=OpenSSH Server Socket
+Documentation=man:sshd(8) man:sshd_config(5)
+Conflicts=sshd.service
+
+[Socket]
+ListenStream=22
+Accept=yes
+
+[Install]
+WantedBy=sockets.target
+```
+  
+As we understand there is no need actual service working, even if we will disable **sshd.service**. Port 22 will be still available and connection through **ssh** can be established, because **sshd.socket** takes care of that.  
+
+- ```/usr/lib/systemd/system/sshd.service``` - **.service** file goes for any unit file and consist of three parts
+    - Unit - generic information about service, dependencies.
+    - Service - service definition itself
+    - Install - important for target 
+  
+```
+[Unit]
+Description=OpenSSH server daemon
+Documentation=man:sshd(8) man:sshd_config(5)
+After=network.target sshd-keygen.service
+Wants=sshd-keygen.service
+
+[Service]
+Type=notify
+EnvironmentFile=/etc/sysconfig/sshd
+ExecStart=/usr/sbin/sshd -D $OPTIONS
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- ``` systemctl show sshd.service ``` - list different parameters which can be included for **sshd.service**
+- ```man systemd.directives``` - get information how to use parameters for services
+- ```man systemd.unit``` - get information about directives which is related to **unit** files. 
+- ```systemctl set-property``` - nice way to modify **unit file**
+    - ```systemctl set-property httpd.service MemoryLimit=500M``` - set memory limit to the **httpd.service**. Service **must be** active to apply some changes on it. 
+    - we can see that limit loaded to the service and stored in **httpd.service.d** directory
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img29.JPG)
+
+- another aproach is copy unit file from **/usr/lib/systemd/system** to **/etc/systemd/system** directory. Let's modify content of the **unit file**
+```
+[Unit]
+Description=System Logging Service
+;Requires=syslog.socket
+Wants=network.target network-online.target
+After=network.target network-online.target
+Documentation=man:rsyslogd(8)
+Documentation=http://www.rsyslog.com/doc/
+
+[Service]
+Type=notify
+EnvironmentFile=-/etc/sysconfig/rsyslog
+ExecStart=/usr/sbin/rsyslogd -n $SYSLOGD_OPTIONS
+Restart=on-failure #Change to Restart=Always
+#Add line here RestartSec=3
+UMask=0066
+StandardOutput=null
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- we have changed restart behaviour and added restart time to **rsyslog.service**. Let's reload daemon.
+    - ```systemctl daemon-reload``` - daemon reload. 
+    - from ```systemctl status rsyslog``` - we can see that service loaded with new settings. 
+
+```
+● rsyslog.service - System Logging Service
+   Loaded: loaded (/etc/systemd/system/rsyslog.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2019-08-23 10:07:02 CEST; 6h ago
+     Docs: man:rsyslogd(8)
+           http://www.rsyslog.com/doc/
+ Main PID: 995 (rsyslogd)
+   CGroup: /system.slice/rsyslog.service
+           └─995 /usr/sbin/rsyslogd -n
+```
+
+- ``` systemctl [TAB][TAB] ``` - to get all available options. 
+
+###### 17.6 Working with systemd Targets
+- ```targets``` - just a group of **unit files** which can be behave in specific way. 
+- ```ls *.target /usr/lib/systemd/system``` -get list of all available targets.
+- ```vim /usr/lib/systemd/system/multi-user.target``` - let's see content of that file
+
+```
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+
+[Unit]
+Description=Multi-User System
+Documentation=man:systemd.special(7)
+Requires=basic.target
+Conflicts=rescue.service rescue.target
+After=basic.target rescue.service rescue.target
+AllowIsolate=yes
+```
+
+- Here we can see dependency **basic.target**. Which required before **multi-user.target** starts.
+- We can see this target for instance in **httpd.service** unit inside of **Install** section.
+
+- ```/etc/systemd/system/multi-user.target.wants``` - we have this directory which contains of following sym links. If we include service in **multi-user.target** it will create symbolic links
+```
+lrwxrwxrwx. 1 root root 35 Aug 21 15:08 atd.service -> /usr/lib/systemd/system/atd.service
+lrwxrwxrwx. 1 root root 38 Jul 17 14:56 auditd.service -> /usr/lib/systemd/system/auditd.service
+lrwxrwxrwx. 1 root root 39 Aug 14 11:56 chronyd.service -> /usr/lib/systemd/system/chronyd.service
+lrwxrwxrwx. 1 root root 37 Jul 17 14:55 crond.service -> /usr/lib/systemd/system/crond.service
+lrwxrwxrwx. 1 root root 42 Jul 17 14:56 irqbalance.service -> /usr/lib/systemd/system/irqbalance.service
+lrwxrwxrwx. 1 root root 37 Jul 17 14:56 kdump.service -> /usr/lib/systemd/system/kdump.service
+lrwxrwxrwx. 1 root root 46 Jul 17 14:55 NetworkManager.service -> /usr/lib/systemd/system/NetworkManager.service
+lrwxrwxrwx. 1 root root 39 Jul 17 14:56 postfix.service -> /usr/lib/systemd/system/postfix.service
+lrwxrwxrwx. 1 root root 40 Jul 17 14:55 remote-fs.target -> /usr/lib/systemd/system/remote-fs.target
+lrwxrwxrwx. 1 root root 46 Jul 17 14:55 rhel-configure.service -> /usr/lib/systemd/system/rhel-configure.service
+lrwxrwxrwx. 1 root root 39 Jul 17 14:56 rsyslog.service -> /usr/lib/systemd/system/rsyslog.service
+lrwxrwxrwx. 1 root root 36 Jul 17 14:56 sshd.service -> /usr/lib/systemd/system/sshd.service
+lrwxrwxrwx. 1 root root 37 Jul 17 14:55 tuned.service -> /usr/lib/systemd/system/tuned.service
+```
