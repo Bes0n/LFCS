@@ -1054,7 +1054,7 @@ Processes column:
 - Nice range is starting from **-20** to **+90**. 
     - **-20** - is not going to be nice to other processes
     - **+90** - process will be nice to other processes
-    *Note: regular user can run only positive numbers for nice, root can use also negative valuesq*
+    *Note: regular user can run only positive numbers for nice, root can use also negative values*
 - ``` nice [OPTION] [COMMAND [ARG]] ```
 - ``` nice -n 5 dd if/dev/zero =of/dev/null & ``` - going to start process with **nice** value **5**
 - ``` renice -n 5 14053 ``` - renice already running process and set **nice** value to **5**
@@ -1083,7 +1083,7 @@ If you're working with source file, most time we have **Makefile** in source cod
 ```
 nmapgui-1.0.2.src.tar.gz: gzip compressed data, was "nmapgui-1.0.2.src.tar", from Unix, last modified: Tue Sep  6 23:49:00 2005
 ```  
-- ``` gunzip nmapgui-1.0.2.src.tar ``` - we can unzip archive with **gunzip**. In the end we will have file **nmapgui-1.0.2.src.tar**
+- ``` gunzip nmapgui-1.0.2.src.tar.gz ``` - we can unzip archive with **gunzip**. In the end we will have file **nmapgui-1.0.2.src.tar**
 - ``` file nmapgui-1.0.2.src.tar ``` - we will see as the result  
 ```
 nmapgui-1.0.2.src.tar: POSIX tar archive (GNU
@@ -1247,7 +1247,7 @@ MAILTO=root
 
 - ```crontab -e``` - open **crontab** for current user
 - ```*/10 * * * 1-5 logger its a weekday``` - create a job to run every 10 minutes, every hour, every day of month, every month, 5 days in a week. 
-- ```crontab -e -u define user``` - create crontad for defined user
+- ```crontab -e -u define user``` - create crontab for defined user
 - ```crontab --help```
 ```
 Usage:
@@ -1449,7 +1449,7 @@ local7.*                                                /var/log/boot.log
 ```
 
 - ```crit.*   /var/log/critical``` - create your own rule for **critical** events. 
-- ```logger op crit CRITICAL SITUATION``` - write to the **syslog** with **crit** option. 
+- ```logger -p crit CRITICAL SITUATION``` - write to the **syslog** with **crit** option. 
 
 ###### 15.5 Rotating Log Files with logrotate
 - ```/etc/cron.daily/logrotate``` - we have **logrotate** script in **cron.daily** directory 
@@ -2178,7 +2178,7 @@ There are two different systems of **Mandatory Access Control**:
     - complete: all denied
     - policy used:
         - rules - what is allowed, what is not
-    - also available of SUSE and Ubuntu
+    - also available on SUSE and Ubuntu
 - **AppArmor**:
     - Purchased by SUSE. SUSE and Ubuntu - default solution. 
     - easy to configure
