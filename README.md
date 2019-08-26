@@ -22,6 +22,7 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 15: Configuring Logging](#lesson-15-configuring-logging)
     - [Lesson 16: Basic Kernel Management](#lesson-16-basic-kernel-management)
     - [Lesson 17: Managing the Boot Process](#lesson-17-managing-the-boot-process)
+    - [Lesson 18: Managing SELinux and AppArmor](#lesson-18-managing-selinux-and-apparmor)
 
 ## Module 1: Essential Commands
 
@@ -2138,3 +2139,369 @@ sshd.service
 ●   │ └─systemd-udevd-kernel.socket
 ```
 
+- ```systemctl isolate graphical.target``` - to start isolated graphical.target from multi-user.target 
+
+### Lesson 18: Managing SELinux and AppArmor
+###### 18.1 Understanding the Need for Mandatory Access Control
+- If you run some service with regular user, like **apache**. You have to take measures, so this account couldn't harm your system. As we can see, there are a lot of processes run by **apache** user.   
+
+```
+[root@centos ~]# ps aux | grep httpd
+root      1914  2.5  0.4 224056  5004 ?        Ss   11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+apache    1915  0.0  0.2 224056  2960 ?        S    11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+apache    1916  0.0  0.2 224056  2960 ?        S    11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+apache    1917  0.0  0.2 224056  2960 ?        S    11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+apache    1918  0.0  0.2 224056  2960 ?        S    11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+apache    1919  0.0  0.2 224056  2960 ?        S    11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+```
+  
+- If we will try to log on as **apache** user, we will get the following error:
+```
+[root@centos ~]# su - apache
+This account is currently not available.
+```
+  
+- Because shell for that user set to **/sbin/nologin**:
+```
+[root@centos ~]# cat /etc/passwd | grep apache
+apache:x:48:48:Apache:/usr/share/httpd:/sbin/nologin
+```
+
+There are two different systems of **Mandatory Access Control**:
+- **AppArmor** - solution used on Ubuntu and SUSE families. 
+- **SELinux** - solution used by CentOs and related distributions. 
+
+###### 18.2 SELinux vs AppArmor
+- **SELinux**:
+    - Old, NSA, RHAT
+    - difficult
+    - complete: all denied
+    - policy used:
+        - rules - what is allowed, what is not
+    - also available of SUSE and Ubuntu
+- **AppArmor**:
+    - Purchased by SUSE. SUSE and Ubuntu - default solution. 
+    - easy to configure
+    - confined services 
+    - profile files
+
+###### 18.3 Configuring AppArmor
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img30.JPG)
+  
+- Let's make some demo with **AppArmor** on **SUSE**. AppArmor already **enabled** on SUSE by default
+```
+linux-aqsf:~ # aa-
+aa-audit           aa-disable         aa-genprof         aa-status
+aa-autodep         aa-easyprof        aa-logprof         aa-teardown
+aa-cleanprof       aa-enabled         aa-mergeprof       aa-unconfined
+aa-complain        aa-enforce         aa-notify          
+aa-decode          aa-exec            aa-remove-unknown  
+```
+
+- ```aa-status | less``` - get information about profiles. 
+```
+linux-aqsf:~ # aa-status | less
+apparmor module is loaded.
+45 profiles are loaded.
+45 profiles are in enforce mode.
+   /usr/bin/lessopen.sh
+   /usr/lib/apache2/mpm-prefork/apache2
+   /usr/lib/apache2/mpm-prefork/apache2//DEFAULT_URI
+   /usr/lib/apache2/mpm-prefork/apache2//HANDLING_UNTRUSTED_INPUT
+   /usr/lib/apache2/mpm-prefork/apache2//phpsysinfo
+   /usr/lib/dovecot/anvil
+   /usr/lib/dovecot/auth
+   /usr/lib/dovecot/config
+   /usr/lib/dovecot/deliver
+   /usr/lib/dovecot/dict
+   /usr/lib/dovecot/dovecot-auth
+   /usr/lib/dovecot/dovecot-lda
+   /usr/lib/dovecot/dovecot-lda//sendmail
+   /usr/lib/dovecot/imap
+   /usr/lib/dovecot/imap-login
+   /usr/lib/dovecot/lmtp
+   /usr/lib/dovecot/log
+   /usr/lib/dovecot/managesieve
+   /usr/lib/dovecot/managesieve-login
+   /usr/lib/dovecot/pop3
+   /usr/lib/dovecot/pop3-login
+   /usr/lib/dovecot/ssl-params
+```
+
+- ```/etc/apparmor.d/``` - directory where **profiles** located itself.
+```
+linux-aqsf:/etc/apparmor.d # ls
+abstractions                         usr.lib.dovecot.lmtp
+apache2.d                            usr.lib.dovecot.log
+bin.ping                             usr.lib.dovecot.managesieve
+cache                                usr.lib.dovecot.managesieve-login
+disable                              usr.lib.dovecot.pop3
+local                                usr.lib.dovecot.pop3-login
+sbin.klogd                           usr.lib.dovecot.ssl-params
+sbin.syslog-ng                       usr.lib.dovecot.stats
+sbin.syslogd                         usr.sbin.apache2
+tunables                             usr.sbin.avahi-daemon
+usr.bin.lessopen.sh                  usr.sbin.dnsmasq
+usr.lib.apache2.mpm-prefork.apache2  usr.sbin.dovecot
+usr.lib.dovecot.anvil                usr.sbin.identd
+usr.lib.dovecot.auth                 usr.sbin.mdnsd
+usr.lib.dovecot.config               usr.sbin.nmbd
+usr.lib.dovecot.deliver              usr.sbin.nscd
+usr.lib.dovecot.dict                 usr.sbin.ntpd
+usr.lib.dovecot.dovecot-auth         usr.sbin.smbd
+usr.lib.dovecot.dovecot-lda          usr.sbin.smbldap-useradd
+usr.lib.dovecot.imap                 usr.sbin.traceroute
+usr.lib.dovecot.imap-login           usr.sbin.winbindd
+```
+
+- let's investigate **apache** profile **"usr.sbin.apache2"**. We can see there entire content of profile. 
+    - We have couple of includes here for **base** and **nameservice**
+    - Also some read-write permissions indicated here. 
+    - Include of apache2.d
+
+```
+# Author: Marc Deslauriers <marc.deslauriers@ubuntu.com>
+
+#include <tunables/global>
+profile apache2 /usr/{bin,sbin}/apache2 flags=(attach_disconnected) {
+
+  # This profile is completely permissive.
+  # It is designed to target specific applications using mod_apparmor,
+  # hats, and the apache2.d directory.
+  #
+  # In order to enable this profile, you must:
+  #
+  # 0- Stop apache:
+  #    sudo service apache2 stop
+  #
+  # 1- Enable the profile:
+  #    sudo aa-enforce /etc/apparmor.d/usr.sbin.apache2
+  #
+  # 2- Load the mpm_prefork and mod_apparmor modules:
+  #    sudo a2dismod <other non-prefork mpm>
+  #    sudo a2enmod mpm_prefork
+  #    sudo a2enmod apparmor
+  #    sudo service apache2 restart
+  #
+  # 3- Place an appropriate profile containing the desired hat in the
+  #    /etc/apparmor.d/apache2.d directory.  Such profiles must include
+  #    the "apache2-common" abstraction:
+  #
+  #    ^example.com {
+  #        #include <abstractions/apache2-common>
+  #        /var/www/html/             r,
+  #        /var/www/html/**           r,
+  #        /var/log/apache2/*.log     w,
+  #    }
+  #
+  # 4- Use the "AADefaultHatName" apache configuration option to specify a
+  #    hat to be used for a given apache virtualhost or "AAHatName" for
+  #    a given apache directory or location directive:
+  #
+  #    <VirtualHost example.com:80>
+  #        <IfModule mod_apparmor.c>
+  #            AADefaultHatName example.com
+  #        </IfModule>
+  #        ...
+  #    </VirtualHost>
+  #
+  #
+  # There is an example profile for phpsysinfo included in the
+  # apparmor-profiles package. To try it:
+  #
+  # 1- Install the phpsysinfo and the apparmor-profiles packages:
+  #    sudo apt-get install phpsysinfo apparmor-profiles
+  #
+  # 2- Enable the main apache2 profile
+  #    sudo aa-enforce /etc/apparmor.d/usr.sbin.apache2
+  #
+  # 3- Configure apache with the following (or similar):
+  #    Alias /phpsysinfo /usr/share/phpsysinfo
+  #    <Location /phpsysinfo>
+  #        <IfModule mod_apparmor.c>
+  #          AAHatName phpsysinfo
+  #        </IfModule>
+  #
+  #        # adjust as necessary:
+  #        Options None
+  #        Require local
+  #        Require ip 192.168.0.0/16
+  #    </Location>
+  #
+
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  # Send signals to all hats.
+  signal (send) peer=@{profile_name}//*,
+
+  capability dac_override,
+  capability kill,
+  capability net_bind_service,
+  capability setgid,
+  capability setuid,
+  capability sys_tty_config,
+
+  / rw,
+  /** mrwlkix,
+
+
+  ^DEFAULT_URI flags=(attach_disconnected) {
+    #include <abstractions/base>
+    #include <abstractions/apache2-common>
+
+    / rw,
+    /** mrwlkix,
+  }
+
+  ^HANDLING_UNTRUSTED_INPUT flags=(attach_disconnected) {
+    #include <abstractions/apache2-common>
+
+    / rw,
+    /** mrwlkix,
+  }
+
+  # This directory contains web application
+  # package-specific apparmor files.
+
+  #include <apache2.d>
+
+  # Site-specific additions and overrides. See local/README for details.
+  #include <local/usr.sbin.apache2>
+}
+```
+
+- ```aa-genprof $(which vim)``` - let's generate profile for **vim**
+```
+ldd: warning: you do not have execution permission for `/lib64/libattr.so.1.1.0'
+ldd: warning: you do not have execution permission for `/lib64/libattr.so.1.1.0'
+Writing updated profile for /usr/bin/vim-nox11.
+Setting /usr/bin/vim-nox11 to complain mode.
+```
+
+- ```aa-genprof /usr/bin/ping``` - let's run **ping** command in **complain mode**. Run ping command once and **(S)can** from running **AppArmor**, we have options to **allow** or **deny** and so on. 
+
+```
+Profiling: /usr/bin/ping
+
+Please start the application to be profiled in
+another window and exercise its functionality now.
+
+Once completed, select the "Scan" option below in
+order to scan the system logs for AppArmor events.
+
+For each AppArmor event, you will be given the
+opportunity to choose whether the access should be
+allowed or denied.
+
+[(S)can system log for AppArmor events] / (F)inish
+Reading log entries from /var/log/audit/audit.log.
+Updating AppArmor profiles in /etc/apparmor.d.
+Complain-mode changes:
+
+Profile:    /usr/bin/ping
+Capability: net_raw
+Severity:   8
+
+ [1 - capability net_raw,]
+(A)llow / [(D)eny] / (I)gnore / Audi(t) / Abo(r)t / (F)inish
+```
+
+- where **complain mode** means that currently **AppArmor** monitoring what's happening.  
+- ```aa-autodep ping``` - create profile for **ping** command. From **aa-status** we can see that currently we have 1 profile in **complain** mode.
+- ```aa-enforce /usr/bin/ping``` - enforce profile.
+    - after that for running **ping** command we will receive error: **permission denied** even if you're **root** user
+- ```aa-logprof``` - to see what actions tried to be **executed**. And we can allow or deny access to it. 
+- ```aa-disable /usr/bin/ping``` - disable profile. 
+
+###### 18.4 Configuring the SELinux Mode
+-  States of SELinux can be:
+    - **enabled**
+        - **enforcing** mode - fully operational
+        - **permissive** mode - easy mode to do troubleshooting
+        - **setenforce** - to toggle between two of them. 
+    - **disabled**
+    - **/etc/sysconfig/selinux** or **/etc/selinux/config** to toggle between state **disabled** or **enabled**
+
+*Note: if you switch mode you will need to reboot* 
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img31.JPG)
+
+- ```getenforce``` - to check if we're in **Enforcing** mode
+```
+[root@centos ~]# getenforce
+Enforcing
+```
+
+- ```setenforce Permissive``` - will switch to **Permissive** mode
+```
+[root@centos ~]# setenforce Permissive
+[root@centos ~]# getenforce
+Permissive
+```
+
+- ```setenforce disabled``` - is not possible, only **Enforcing** or **Permissive** modes are available.  
+
+```
+[root@centos ~]# setenforce disabled
+usage:  setenforce [ Enforcing | Permissive | 1 | 0 ]
+```
+
+- ```cd /etc/sysconfig/``` - place where symbolic link of selinux placed
+```
+[root@centos sysconfig]# ls -l selinux
+lrwxrwxrwx. 1 root root 17 Jul 17 14:55 selinux -> ../selinux/config
+```
+
+- ```/etc/selinux/config``` - SELinux configuration file. In case if you want to disable SELinux. Change ```SELINUX=enforcing``` to ```SELINUX=disabled``` and **reboot**. But you don't want to do that, system need to be secured. 
+
+```
+# This file controls the state of SELinux on the system.
+# SELINUX= can take one of these three values:
+#     enforcing - SELinux security policy is enforced.
+#     permissive - SELinux prints warnings instead of enforcing.
+#     disabled - No SELinux policy is loaded.
+SELINUX=enforcing
+# SELINUXTYPE= can take one of three values:
+#     targeted - Targeted processes are protected,
+#     minimum - Modification of targeted policy. Only selected processes are protected.
+#     mls - Multi Level Security protection.
+SELINUXTYPE=targeted
+```
+
+###### 18.5 Working with SELinux Labels
+- **Context label** - essential part of SELinux. Consist of 3 parts:
+    - user
+    - role 
+    - type or context type
+- ```ls -lZ``` - many commands, get information about **context labels**
+```
+[root@centos selinux]# ls -lZ
+-rw-r--r--. root root system_u:object_r:selinux_config_t:s0 config
+drwx------. root root system_u:object_r:selinux_config_t:s0 final
+-rw-r--r--. root root system_u:object_r:selinux_config_t:s0 semanage.conf
+drwxr-xr-x. root root system_u:object_r:selinux_config_t:s0 targeted
+drwxr-xr-x. root root system_u:object_r:selinux_config_t:s0 tmp
+```
+
+- ```ps Zaux``` - context type also exists in processes
+```
+system_u:system_r:httpd_t:s0    root      1914  0.0  0.4 224056  5004 ?        Ss   11:46   0:01 /usr/sbin/httpd -DFOREGROUND
+system_u:system_r:httpd_t:s0    apache    1915  0.0  0.2 224056  2960 ?        S    11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+system_u:system_r:httpd_t:s0    apache    1916  0.0  0.2 224056  2960 ?        S    11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+system_u:system_r:httpd_t:s0    apache    1917  0.0  0.2 224056  2960 ?        S    11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+system_u:system_r:httpd_t:s0    apache    1918  0.0  0.2 224056  2960 ?        S    11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+system_u:system_r:httpd_t:s0    apache    1919  0.0  0.2 224056  2960 ?        S    11:46   0:00 /usr/sbin/httpd -DFOREGROUND
+```
+
+- ```netstat -Ztulpen``` - context types also available on ports
+```
+[root@centos ~]# netstat -Ztulpen
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       User       Inode      PID/Program name     Security Context
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      0          18256      1220/master          system_u:system_r:postfix_master_t:s0
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      0          20127      1691/sshd            system_u:system_r:sshd_t:s0-s0:c0.c1023
+tcp6       0      0 ::1:25                  :::*                    LISTEN      0          18257      1220/master          system_u:system_r:postfix_master_t:s0
+tcp6       0      0 :::80                   :::*                    LISTEN      0          21615      1914/httpd           system_u:system_r:httpd_t:s0
+tcp6       0      0 :::22                   :::*                    LISTEN      0          20129      1691/sshd            system_u:system_r:sshd_t:s0-s0:c0.c1023
+```
