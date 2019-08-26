@@ -2080,3 +2080,61 @@ lrwxrwxrwx. 1 root root 39 Jul 17 14:56 rsyslog.service -> /usr/lib/systemd/syst
 lrwxrwxrwx. 1 root root 36 Jul 17 14:56 sshd.service -> /usr/lib/systemd/system/sshd.service
 lrwxrwxrwx. 1 root root 37 Jul 17 14:55 tuned.service -> /usr/lib/systemd/system/tuned.service
 ```
+  
+- When you **enable** some service in systemctl - symbolic link will be created. 
+```
+[root@centos ~]# systemctl enable sshd
+Created symlink from /etc/systemd/system/multi-user.target.wants/sshd.service to /usr/lib/systemd/system/sshd.service.
+```
+
+- Same when you **disable** service - symbolic link will be removed.
+```
+[root@centos ~]# systemctl disable sshd
+Removed symlink /etc/systemd/system/multi-user.target.wants/sshd.service.
+```
+
+- Every linux operating systems that uses **systemd** are using **default target**
+```
+[root@centos ~]# systemctl get-default
+graphical.target
+```
+
+- If you want to change default target: 
+```
+[root@centos ~]# systemctl set-default multi-user.target
+Removed symlink /etc/systemd/system/default.target.
+Created symlink from /etc/systemd/system/default.target to /usr/lib/systemd/system/multi-user.target.
+```
+
+- Reboot to apply your changes. And **get-default** target to be sure, that your changes applied.
+```
+[root@centos ~]# systemctl get-default
+multi-user.target
+```
+
+- ``` systemctl list-units ``` - get information about **units** that currently loaded. 
+- ``` systemctl list-units --all ``` - list also **inactive** units
+- ``` systemctl list-dependencies sshd.service``` - get dependencies of the service
+```
+sshd.service
+● ├─sshd-keygen.service
+● ├─system.slice
+● └─basic.target
+●   ├─iptables.service
+●   ├─microcode.service
+●   ├─rhel-dmesg.service
+●   ├─selinux-policy-migrate-local-changes@targeted.service
+●   ├─paths.target
+●   ├─slices.target
+●   │ ├─-.slice
+●   │ └─system.slice
+●   ├─sockets.target
+●   │ ├─dbus.socket
+●   │ ├─dm-event.socket
+●   │ ├─systemd-initctl.socket
+●   │ ├─systemd-journald.socket
+●   │ ├─systemd-shutdownd.socket
+●   │ ├─systemd-udevd-control.socket
+●   │ └─systemd-udevd-kernel.socket
+```
+
