@@ -2775,3 +2775,45 @@ Disk identifier: 0xd0482aa3
 ```
 
 ###### 19.4 Creating MBR Extended and Logical Partitions
+- In **MBR** we only can have 4 primary partitions. If more required we have to go for **extended** and **logical** partitions. 
+
+- ```fdisk /dev/sdb``` - again go to fdisk utility
+    - ```n``` - for **new** partition
+    - ```e``` - for **extended** partition
+    - ```First sector (1050624-2516581, default 1050624):``` - will search for first available sector
+    - ```Last sector, +sectors or +size{K,M,G} (1050624-2516581, default 2516581):``` - will take last sector as default which is really suggested to avoid waste of disk space. 
+  
+**IMPORTANT: You create extended partition as your last partition. Everything that won't be available in the extended partition in that case won't be addressable anymore. That will be a waste of the disk space**
+
+```
+Partition type:
+   p   primary (1 primary, 0 extended, 3 free)
+   e   extended
+Select (default p): e
+```
+  
+```
+Partition number (2-4, default 2): 2
+```
+  
+```
+First sector (1050624-2516581, default 1050624):
+Using default value 1050624
+```
+  
+```
+Last sector, +sectors or +size{K,M,G} (1050624-2516581, default 2516581):
+Using default value 2516581
+Partition 2 of type Extended and of size 715.8 MiB is set
+```
+
+- **Extended** partition is like an empty box. You should create **logical** partition in it. 
+
+- from **fdisk** we can see that logical partition is available now.  
+```
+Command (m for help): n
+Partition type:
+   p   primary (1 primary, 1 extended, 2 free)
+   l   logical (numbered from 5)
+Select (default p):
+```
