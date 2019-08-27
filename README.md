@@ -2619,3 +2619,26 @@ tftp_home_dir --> off
 
 ## Module 5: Storage Management
 ### Lesson 19: Managing Partitions
+###### 19.1 Understanding Disk Storage Solutions
+- Linux split all disk into partitions, if common disk name is /**dev/sda**, then:
+    - ```/dev/sda1``` - /boot
+    - ```/dev/sda2``` - /root
+    - ```/dev/sda3``` - /home
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img34.JPG)
+
+###### 19.2 Understanding MBR and GPT Partitions
+- On current Linux there are 2 type or partitions:
+    - MBR
+        - Computers that are booting from **BIOS** (Basic Input Output System)
+        - Used by disk which is less than 2Tb
+        - Maximum is 4 partitions
+        - Extended partitions
+        - Logical partitions
+        - **fdisk** for MBR partitions
+    - GPT
+        - **UEFI** (Unified Extensible Firmware Interface) - new solution for booting, which using GPT paritioning.
+        - Used by disk which is more than 2Tb
+        - You can address max 128 partitions
+        - All partitions are primary
+        - **gdisk** to manage GPT partitions
