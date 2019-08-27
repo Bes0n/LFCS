@@ -2758,7 +2758,9 @@ major minor  #blocks  name
   11        0    1048575 sr0
  253        0    6496256 dm-0
  253        1     839680 dm-1
-
+```
+  
+```
 [root@centos ~]# fdisk -l /dev/sdb
 
 Disk /dev/sdb: 1288 MB, 1288489984 bytes, 2516582 sectors
@@ -2771,3 +2773,5 @@ Disk identifier: 0xd0482aa3
    Device Boot      Start         End      Blocks   Id  System
 /dev/sdb1            2048     2099199     1048576   83  Linux
 ```
+
+###### 19.4 Creating MBR Extended and Logical Partitions
