@@ -2379,35 +2379,50 @@ Writing updated profile for /usr/bin/vim-nox11.
 Setting /usr/bin/vim-nox11 to complain mode.
 ```
 
-- ```aa-genprof /usr/bin/ping``` - let's run **ping** command in **complain mode**. Run ping command once and **(S)can** from running **AppArmor**, we have options to **allow** or **deny** and so on. 
+- ```aa-genprof /bin/vim``` - let's run **vim** command in **complain mode**. 
+    - Open **vim** in another terminal window and add line to the **/etc/hosts**. **(S)can** from running **AppArmor**, we have options to **allow** or **deny** and so on.
+
+After adddition of few lines in **/etc/hosts** we can (S)can system log for AppArmor events  
 
 ```
-Profiling: /usr/bin/ping
-
-Please start the application to be profiled in
-another window and exercise its functionality now.
-
-Once completed, select the "Scan" option below in
-order to scan the system logs for AppArmor events.
-
-For each AppArmor event, you will be given the
-opportunity to choose whether the access should be
-allowed or denied.
-
 [(S)can system log for AppArmor events] / (F)inish
 Reading log entries from /var/log/audit/audit.log.
 Updating AppArmor profiles in /etc/apparmor.d.
 Complain-mode changes:
 
-Profile:    /usr/bin/ping
-Capability: net_raw
-Severity:   8
+Profile:  /usr/bin/vim-nox11
+Path:     /etc/apparmor.d/
+New Mode: owner r
+Severity: 6
 
- [1 - capability net_raw,]
-(A)llow / [(D)eny] / (I)gnore / Audi(t) / Abo(r)t / (F)inish
+ [1 - owner /etc/apparmor.d/ r,]
+(A)llow / [(D)eny] / (I)gnore / (G)lob / Glob with (E)xtension / (N)ew / Audi(t) / (O)wner permissions off / Abo(r)t / (F)inish
+```
+- Actions:
+    (A)llow
+    (D)eny
+    (I)gnore
+    (G)lob - if you want **vi** to be allowed to entire **/etc** directory
+    Glob with (E)xtension - if you want **vi** to be allowed to entire **/etc** directory, but only if you have **.swp** directory. 
+  
+  
+- Let's save our changes
+```
+= Changed Local Profiles =
+
+The following local profiles were changed. Would you like to save them?
+
+ [1 - /usr/bin/vim-nox11]
+(S)ave Changes / Save Selec(t)ed Profile / [(V)iew Changes] / View Changes b/w (C)lean profiles / Abo(r)t
+Writing updated profile for /usr/bin/vim-nox11.
 ```
 
-- where **complain mode** means that currently **AppArmor** monitoring what's happening.  
+- After profile creation we can only access **/etc/hosts** with **vim** because we created profile. If we'll try to access something else, we're going to receive **permission** error
+```
+linux-aqsf:/etc/apparmor.d # vim usr.bin.vim-nox11
+"usr.bin.vim-nox11" [Permission Denied]
+```
+
 - ```aa-autodep ping``` - create profile for **ping** command. From **aa-status** we can see that currently we have 1 profile in **complain** mode.
 - ```aa-enforce /usr/bin/ping``` - enforce profile.
     - after that for running **ping** command we will receive error: **permission denied** even if you're **root** user
@@ -2505,3 +2520,71 @@ tcp6       0      0 ::1:25                  :::*                    LISTEN      
 tcp6       0      0 :::80                   :::*                    LISTEN      0          21615      1914/httpd           system_u:system_r:httpd_t:s0
 tcp6       0      0 :::22                   :::*                    LISTEN      0          20129      1691/sshd            system_u:system_r:sshd_t:s0-s0:c0.c1023
 ```
+
+- ```vim /etc/httpd/conf/httpd.conf``` - let's start from apache configuration file. 
+    - ```DocumentRoot "/var/www/html"``` - comment it and set to ```DocumentRoot "/web"```
+    - ```<Directory "/var/www">``` change to ```<Directory "/web">```
+    - Create directory ```/web``` and file ```/web/index.html``` with content inside. 
+    - ```systemctl restart httpd``` - Restart apache. 
+
+- If we have **Permissive** mode - we can see new content that we just created. 
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img32.JPG)
+
+- But if we will change mode to **Enforcing**, content will not be available anymore. 
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img33.JPG)
+
+- This caused because directory **/web** doesn't have right context. Processes that running by apache with context **httpd_t** don't allowed to access items with context **default_t**. 
+```
+[root@centos web]# ls -lZd
+drwxr-xr-x. root root unconfined_u:object_r:default_t:s0 .
+```
+
+- ```semanage fcontext``` - SELinux Policy Management file context tool. 
+```
+EXAMPLE
+       remember to run restorecon after you set the file context
+       Add file-context for everything under /web
+       # semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"
+       # restorecon -R -v /web
+
+       Substitute /home1 with /home when setting file context
+       # semanage fcontext -a -e /home /home1
+       # restorecon -R -v /home1
+
+       For home directories under top level directory, for example /disk6/home,
+       execute the following commands.
+       # semanage fcontext -a -t home_root_t "/disk6"
+       # semanage fcontext -a -e /home /disk6/home
+       # restorecon -R -v /disk6
+```
+
+- ```semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"``` - will write new context type to  SELinux policy, but it doesn't apply it to the file system yet. **-a** - add, **-t** - type, **"/web(/.*)?"** - web directory and everything what is below it. 
+
+- ```restorecon -R -v /web``` - to apply set SELinux policy to the **file system**
+- ```ls -lZd /web``` - you can see now new policy was applied and context type has been changed. 
+```
+[root@centos web]# ls -lZd
+drwxr-xr-x. root root unconfined_u:object_r:httpd_sys_content_t:s0 .
+```
+
+- context apply to the others level as well - **ports**. Let's try to change **ssh** default port. From **/etc/ssh/sshd_config** we can see the following:
+```
+# If you want to change the port on a SELinux system, you have to tell
+# SELinux about this change.
+# semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
+#
+#Port 22
+#AddressFamily any
+#ListenAddress 0.0.0.0
+#ListenAddress ::
+```
+
+- we can see line **Port 22**, but for SELinux system it's not enough. 
+- ```semanage port -a -t ssh_port_t -p tcp #PORTNUMBER``` - that command required to make changes in SELinux policy. 
+  
+- for changing default port, you need to do following steps:
+    - uncomment line **Port 2022** 
+    - ```semanage port -a -t ssh_port_t -p tcp 2022``` - run command to apply policy change in SELinux
+    - ```systemctl restart sshd``` - restart **sshd** service 
