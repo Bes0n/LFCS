@@ -23,6 +23,8 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 16: Basic Kernel Management](#lesson-16-basic-kernel-management)
     - [Lesson 17: Managing the Boot Process](#lesson-17-managing-the-boot-process)
     - [Lesson 18: Managing SELinux and AppArmor](#lesson-18-managing-selinux-and-apparmor)
+- [Module 5: Storage Management](#module-5-storage-management)
+    - [Lesson 19: Managing Partitions](#lesson-19-managing-partitions)
 
 ## Module 1: Essential Commands
 
@@ -2588,3 +2590,32 @@ drwxr-xr-x. root root unconfined_u:object_r:httpd_sys_content_t:s0 .
     - uncomment line **Port 2022** 
     - ```semanage port -a -t ssh_port_t -p tcp 2022``` - run command to apply policy change in SELinux
     - ```systemctl restart sshd``` - restart **sshd** service 
+
+###### 18.6 Managing SELinux Booleans
+- ```getsebool -a``` - get list of currently existing **booleans**
+- ```getsebool -a | grep ftp``` - let's get all booleans with ftp in name. 
+[root@centos web]# getsebool -a | grep ftp
+ftpd_anon_write --> off
+ftpd_connect_all_unreserved --> off
+ftpd_connect_db --> off
+ftpd_full_access --> off
+ftpd_use_cifs --> off
+ftpd_use_fusefs --> off
+ftpd_use_nfs --> off
+ftpd_use_passive_mode --> off
+httpd_can_connect_ftp --> off
+httpd_enable_ftp_server --> off
+tftp_anon_write --> off
+tftp_home_dir --> off
+
+- ```ftpd_anon_write --> off``` - means that **anonimous write** is set to **off**. No matter if you configure your **FTP server** to allow anonimous write, SELinux will **stop** it, no matter what. 
+
+- ```setsebool -P ftpd_anon_write on``` - set anonimous write to on (allow) state, with **-P** key - which means persistent.
+
+###### 18.7 Troubleshooting SELinux with sealert
+- ```yum provides *sealert``` - search which package provides **sealert**
+- go to **/var/log/messages** and search for **sealert** event.
+- ```sealert -l 949523-2342-fasf-124124 | less``` - from this event you can get information what happened, possible solutions and so on. 
+
+## Module 5: Storage Management
+### Lesson 19: Managing Partitions
