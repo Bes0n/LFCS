@@ -2642,3 +2642,91 @@ tftp_home_dir --> off
         - You can address max 128 partitions
         - All partitions are primary
         - **gdisk** to manage GPT partitions
+
+###### 19.3 Creating MBR Partitions
+- ```cat /proc/partitions``` - get information which **storage devices** are available. 
+    - where **sd** means - SCSI disk
+    - **a** - means order of the disk, it means first one. 
+    - **1** and **2** - means numbers of partitions - **sda1**, **sda2** 
+```
+[root@centos ~]# cat /proc/partitions
+major minor  #blocks  name
+
+   8        0    8388608 sda
+   8        1    1048576 sda1
+   8        2    7339008 sda2
+   8       16    1258291 sdb
+  11        0    1048575 sr0
+ 253        0    6496256 dm-0
+ 253        1     839680 dm-1
+```
+
+- ```fdisk /dev/sdb```:
+```
+[root@centos ~]# fdisk /dev/sdb
+Welcome to fdisk (util-linux 2.23.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table
+Building a new DOS disklabel with disk identifier 0xd0482aa3.
+
+Command (m for help):
+```
+
+- ```Command (m for help): m```:
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   g   create a new empty GPT partition table
+   G   create an IRIX (SGI) partition table
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+  
+```
+Command (m for help): n #n means create new partition
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): p #p means primary partition
+Partition number (1-4, default 1): 1 #1 - number indicated for partition
+First sector (2048-2516581, default 2048):
+Using default value 2048 #2048 - start from megabyte number 1
+Last sector, +sectors or +size{K,M,G} (2048-2516581, default 2516581): +1G #select size of the partition. Indicated 1 Gb partition size. 
+Partition 1 of type Linux and of size 1 GiB is set
+
+```
+
+- ``` Command (m for help): p ``` - we used **p** to verify what is going to be created. 
+```
+Disk /dev/sdb: 1288 MB, 1288489984 bytes, 2516582 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk label type: dos
+Disk identifier: 0xd0482aa3
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1            2048     2099199     1048576   83  Linux
+```
+
+```Command (m for help): w``` - write configuration to disk
+```
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+```
