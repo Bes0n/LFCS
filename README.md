@@ -2815,5 +2815,20 @@ Command (m for help): n
 Partition type:
    p   primary (1 primary, 1 extended, 2 free)
    l   logical (numbered from 5)
-Select (default p):
+Select (default p): l 
 ```
+
+- we choose ```l``` in our case for logical partition. 
+- start block comes 1 Mb further of the **extended** partition.
+- we define end block with size **+250M**.
+- ```p``` will show to us information about **extended** and **logical** partitions
+- ```w``` to write configuration to the disk
+
+```
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1            2048     1050623      524288   83  Linux
+/dev/sdb2         1050624     2516581      732979    5  Extended
+/dev/sdb5         1052672     1564671      256000   83  Linux
+```
+
+- ```partprobe``` - contents of the partition table on disk will be syncronized with kernel partition table. That command required if you will receive error *kernel parittion table couldn't syncronize*. 
