@@ -2647,7 +2647,8 @@ tftp_home_dir --> off
 - ```cat /proc/partitions``` - get information which **storage devices** are available. 
     - where **sd** means - SCSI disk
     - **a** - means order of the disk, it means first one. 
-    - **1** and **2** - means numbers of partitions - **sda1**, **sda2** 
+    - **1** and **2** - means numbers of partitions - **sda1**, **sda2**
+   
 ```
 [root@centos ~]# cat /proc/partitions
 major minor  #blocks  name
@@ -2674,8 +2675,9 @@ Building a new DOS disklabel with disk identifier 0xd0482aa3.
 
 Command (m for help):
 ```
-
+  
 - ```Command (m for help): m```:
+```
 Command action
    a   toggle a bootable flag
    b   edit bsd disklabel
@@ -2695,19 +2697,31 @@ Command action
    v   verify the partition table
    w   write table to disk and exit
    x   extra functionality (experts only)
-  
 ```
-Command (m for help): n #n means create new partition
+  
+
+- ```Command (m for help): n #n means create new partition```
+```
+  
 Partition type:
    p   primary (0 primary, 0 extended, 4 free)
    e   extended
-Select (default p): p #p means primary partition
-Partition number (1-4, default 1): 1 #1 - number indicated for partition
-First sector (2048-2516581, default 2048):
-Using default value 2048 #2048 - start from megabyte number 1
-Last sector, +sectors or +size{K,M,G} (2048-2516581, default 2516581): +1G #select size of the partition. Indicated 1 Gb partition size. 
-Partition 1 of type Linux and of size 1 GiB is set
+```
+  
+- ```Select (default p): p #p means primary partition```
 
+- ```Partition number (1-4, default 1): 1 #1 - number indicated for partition```
+
+- ```First sector (2048-2516581, default 2048):```
+
+```
+Using default value 2048 #2048 - start from megabyte number 1
+```
+
+- ```Last sector, +sectors or +size{K,M,G} (2048-2516581, default 2516581): +1G #select size of the partition. Indicated 1 Gb partition size.``` 
+
+```
+Partition 1 of type Linux and of size 1 GiB is set
 ```
 
 - ``` Command (m for help): p ``` - we used **p** to verify what is going to be created. 
@@ -2723,10 +2737,37 @@ Disk identifier: 0xd0482aa3
 /dev/sdb1            2048     2099199     1048576   83  Linux
 ```
 
-```Command (m for help): w``` - write configuration to disk
+- ```Command (m for help): w``` - write configuration to disk
 ```
 The partition table has been altered!
 
 Calling ioctl() to re-read partition table.
 Syncing disks.
+```
+
+- ``` cat /proc/partitions ``` or ```fdisk -l /dev/sdb``` - verify that we have created **sdb1** partition. 
+```
+[root@centos ~]# cat /proc/partitions
+major minor  #blocks  name
+
+   8        0    8388608 sda
+   8        1    1048576 sda1
+   8        2    7339008 sda2
+   8       16    1258291 sdb
+   8       17    1048576 sdb1
+  11        0    1048575 sr0
+ 253        0    6496256 dm-0
+ 253        1     839680 dm-1
+
+[root@centos ~]# fdisk -l /dev/sdb
+
+Disk /dev/sdb: 1288 MB, 1288489984 bytes, 2516582 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk label type: dos
+Disk identifier: 0xd0482aa3
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1            2048     2099199     1048576   83  Linux
 ```
