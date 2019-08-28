@@ -3140,3 +3140,79 @@ Options=defaults
 Aug 28 16:07:28 centos.example.com systemd[1]: Mounting Temporary Directory...
 Aug 28 16:07:28 centos.example.com systemd[1]: Mounted Temporary Directory.
 ```
+
+###### 19.8 Adding a Swap Partition
+- ```SWAP space``` - used as emulated RAM file on hard disk. Used to store data of RAM, which is not used at all.
+
+- ```fdisk /dev/sdc``` - access our partition and change it type.
+    - ```t   change a partition's system id```
+    - ```Hex code (type L to list all codes): L``` - list all **HEX** codes
+    - we need code ```82 - Linux swap / Solaris```
+
+```
+0  Empty           24  NEC DOS         81  Minix / old Lin bf  Solaris
+ 1  FAT12           27  Hidden NTFS Win 82  Linux swap / So c1  DRDOS/sec (FAT-
+ 2  XENIX root      39  Plan 9          83  Linux           c4  DRDOS/sec (FAT-
+ 3  XENIX usr       3c  PartitionMagic  84  OS/2 hidden C:  c6  DRDOS/sec (FAT-
+ 4  FAT16 <32M      40  Venix 80286     85  Linux extended  c7  Syrinx
+ 5  Extended        41  PPC PReP Boot   86  NTFS volume set da  Non-FS data
+ 6  FAT16           42  SFS             87  NTFS volume set db  CP/M / CTOS / .
+ 7  HPFS/NTFS/exFAT 4d  QNX4.x          88  Linux plaintext de  Dell Utility
+ 8  AIX             4e  QNX4.x 2nd part 8e  Linux LVM       df  BootIt
+ 9  AIX bootable    4f  QNX4.x 3rd part 93  Amoeba          e1  DOS access
+ a  OS/2 Boot Manag 50  OnTrack DM      94  Amoeba BBT      e3  DOS R/O
+ b  W95 FAT32       51  OnTrack DM6 Aux 9f  BSD/OS          e4  SpeedStor
+ c  W95 FAT32 (LBA) 52  CP/M            a0  IBM Thinkpad hi eb  BeOS fs
+ e  W95 FAT16 (LBA) 53  OnTrack DM6 Aux a5  FreeBSD         ee  GPT
+ f  W95 Ext'd (LBA) 54  OnTrackDM6      a6  OpenBSD         ef  EFI (FAT-12/16/
+10  OPUS            55  EZ-Drive        a7  NeXTSTEP        f0  Linux/PA-RISC b
+11  Hidden FAT12    56  Golden Bow      a8  Darwin UFS      f1  SpeedStor
+12  Compaq diagnost 5c  Priam Edisk     a9  NetBSD          f4  SpeedStor
+14  Hidden FAT16 <3 61  SpeedStor       ab  Darwin boot     f2  DOS secondary
+16  Hidden FAT16    63  GNU HURD or Sys af  HFS / HFS+      fb  VMware VMFS
+17  Hidden HPFS/NTF 64  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE
+18  AST SmartSleep  65  Novell Netware  b8  BSDI swap       fd  Linux raid auto
+1b  Hidden W95 FAT3 70  DiskSecure Mult bb  Boot Wizard hid fe  LANstep
+1c  Hidden W95 FAT3 75  PC/IX           be  Solaris boot    ff  BBT
+1e  Hidden W95 FAT1 80  Old Minix
+```
+
+- ```Command (m for help): p``` - to get information about partitions.  
+```
+/dev/sdc5         1052672     2097151      522240   82  Linux swap / Solaris
+```
+
+- ```mkswap /dev/sdc5``` - to create swap structure.
+```
+mkswap: /dev/sdc5: warning: wiping old xfs signature.
+Setting up swapspace version 1, size = 522236 KiB
+no label, UUID=7ffc7dc8-57fc-452f-9b51-2128d7ed2162
+```
+
+- ```free -m``` - get information about **memory** and **swap**
+- ```swapon /dev/sdc5``` or ```swapoff /dev/sdc5``` - enable/disable our **swap** partition
+```
+              total        used        free      shared  buff/cache   available
+Mem:            991         103         691           0         195         726
+Swap:           819           0         819
+```
+
+- we can put **swap** configuration in **/etc/fstab** file
+```
+/dev/sdc5                      swap                    swap    defaults        0 0 
+```
+- ```swapon -a``` - enable **swap** which is indicated in **/etc/fstab**
+
+###### 19.9 Understanding Encrypted Partitions
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img36.JPG)
+
+For encrypted devices we need underlying devices:
+- /dev/sdc1
+    - ```fdisk``` - start configuration. 
+    - ```cryptsetup luksFormat``` - command to format physical device. 
+    - ```cryptsetup luksOpen``` - device will be available in ```/dev/mapper/xyz```
+    - **/dev/mapper/xyz** - opened after ```cryptsetup luksOpen``` command and available for putting file system on it. 
+        - ```mkfs /dev/mapper/xyz``` - file system created
+        - ```mount ...``` - mount your directory and start working on it. 
+        - ```cryptsetup luksClose``` - once you done to work with your partition, **luksClose** will close your device and move back to **/dev/sdc1**
