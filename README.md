@@ -2831,4 +2831,312 @@ Select (default p): l
 /dev/sdb5         1052672     1564671      256000   83  Linux
 ```
 
-- ```partprobe``` - contents of the partition table on disk will be syncronized with kernel partition table. That command required if you will receive error *kernel parittion table couldn't syncronize*. 
+- ```partprobe``` - contents of the partition table on disk will be syncronized with kernel partition table. That command required if you will receive error *kernel partition table couldn't syncronize*. 
+
+###### 19.5 Creating GPT Partitions
+- ```gdisk /dev/sdc``` - **gdisk** is utility for creating **GPT** partitions. For applying it on **MBR** you need to convert your disk. 
+```
+[root@centos ~]# gdisk /dev/sdb
+GPT fdisk (gdisk) version 0.8.10
+
+Partition table scan:
+  MBR: MBR only
+  BSD: not present
+  APM: not present
+  GPT: not present
+```
+  
+- let's run **?** for help 
+```
+Command (? for help): ?
+b       back up GPT data to a file
+c       change a partition's name
+d       delete a partition
+i       show detailed information on a partition
+l       list known partition types
+n       add a new partition
+o       create a new empty GUID partition table (GPT)
+p       print the partition table
+q       quit without saving changes
+r       recovery and transformation options (experts only)
+s       sort partitions
+t       change a partition's type code
+v       verify disk
+w       write table to disk and exit
+x       extra functionality (experts only)
+?       print this menu
+```
+
+- ```Command (? for help): n``` - create new partition
+
+- ```Partition number (1-128, default 1): 1``` - select partition number
+
+- ```First sector (34-2516548, default = 2048) or {+-}size{KMGTP}:``` - select first sector start. We used default value. 
+
+- ```Last sector (2048-2516548, default = 2516548) or {+-}size{KMGTP}: +1G``` - last sector, use default or size. In our case we used **1Gb**. 
+- ```Hex code or GUID (L to show codes, Enter = 8300):``` - default value for **Linux filesystem**
+
+- ```Command (? for help): p``` - get information about or changes. Pretty similar to **fdisk**
+
+```
+Disk /dev/sdb: 2516582 sectors, 1.2 GiB
+Logical sector size: 512 bytes
+Disk identifier (GUID): 6ECA454F-ED99-4D3A-81FA-C4D3141EE2C4
+Partition table holds up to 128 entries
+First usable sector is 34, last usable sector is 2516548
+Partitions will be aligned on 2048-sector boundaries
+Total free space is 419363 sectors (204.8 MiB)
+
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1            2048         2099199   1024.0 MiB  8300  Linux filesystem
+```
+
+###### 19.6 Creating File Systems
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img35.JPG)
+
+- ```mkfs [TAB][TAB]``` - to get all available **mkfs** versions
+```
+[root@centos ~]# mkfs
+mkfs         mkfs.cramfs  mkfs.ext3    mkfs.minix
+mkfs.btrfs   mkfs.ext2    mkfs.ext4    mkfs.xfs
+```
+
+- ```mkfs.ext4 --help``` - let's start from **mkfs.ext4**
+- ```mkfs.ext4 -b 1024 -L myfs /dev/sdc1``` - create file system **ext4** on partition **sdc1**
+- ```mount /dev/sdc1 /media/sdc1/``` - mount created file system on directory ```/media/sdc1/```
+- ```mount``` - to double-check that we did everything properly.
+```
+/dev/sdc1 on /media/sdc1 type ext4 (rw,relatime,seclabel,data=ordered)
+```
+- We can create files now and so on. In a root directory of any **ext** file system, you will always have **lost+found** directory. That directory can be used by **fsc** (file system check) utility. It can be activated manually or on reboot to check for lost blocks and they will be copied in that directory.
+
+```
+[root@centos sdc1]# ls
+lost+found  myfile.txt
+```
+
+- ```umount /media/sdc1/``` - unmount your file system from that directory. 
+
+- ```mkfs.xfs --help``` - creating **xfs** file system. 
+```
+mkfs.xfs: invalid option -- '-'
+unknown option --
+Usage: mkfs.xfs
+/* blocksize */         [-b log=n|size=num]
+/* metadata */          [-m crc=0|1,finobt=0|1,uuid=xxx]
+/* data subvol */       [-d agcount=n,agsize=n,file,name=xxx,size=num,
+                            (sunit=value,swidth=value|su=num,sw=num|noalign),
+                            sectlog=n|sectsize=num
+/* force overwrite */   [-f]
+/* inode size */        [-i log=n|perblock=n|size=num,maxpct=n,attr=0|1|2,
+                            projid32bit=0|1]
+/* no discard */        [-K]
+/* log subvol */        [-l agnum=n,internal,size=num,logdev=xxx,version=n
+                            sunit=value|su=num,sectlog=n|sectsize=num,
+                            lazy-count=0|1]
+/* label */             [-L label (maximum 12 characters)]
+/* naming */            [-n log=n|size=num,version=2|ci,ftype=0|1]
+/* no-op info only */   [-N]
+/* prototype file */    [-p fname]
+/* quiet */             [-q]
+/* realtime subvol */   [-r extsize=num,size=num,rtdev=xxx]
+/* sectorsize */        [-s log=n|size=num]
+/* version */           [-V]
+                        devicename
+<devicename> is required unless -d name=xxx is given.
+<num> is xxx (bytes), xxxs (sectors), xxxb (fs blocks), xxxk (xxx KiB),
+      xxxm (xxx MiB), xxxg (xxx GiB), xxxt (xxx TiB) or xxxp (xxx PiB).
+<value> is xxx (512 byte blocks).
+```
+
+- ```mkfs.xfs -L XFS /dev/sdc2``` - create **xfs** partition. But we received error, because it's not possible to create partition on **Extended** partition with 1 block size, we have to do it on **logical** partition.
+
+```
+[root@centos ~]# mkfs.xfs -L XFS /dev/sdc2
+mkfs.xfs: /dev/sdc2 appears to contain a partition table (dos).
+mkfs.xfs: Use the -f option to force overwrite.
+```
+
+- ```[root@centos ~]# mkfs.xfs -L XFS /dev/sdc5``` - create **xfs** file system on logical partition **/dev/sdc5**
+
+```
+meta-data=/dev/sdc5              isize=512    agcount=4, agsize=32640 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=130560, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=855, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+```
+
+- ```mount LABEL=XFS /media/sdc5/``` - mount created **XFS** label. 
+- ```mount``` - to double-check that partition mounted. 
+```
+/dev/sdc5 on /media/sdc5 type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+```
+
+- ```mkfs.btrfs --help``` - get information about 'butterfs'
+```
+Usage: mkfs.btrfs [options] dev [ dev ... ]
+Options:
+  allocation profiles:
+        -d|--data PROFILE       data profile, raid0, raid1, raid5, raid6, raid10, dup or single
+        -m|--metadata PROFILE   metadata profile, values like for data profile
+        -M|--mixed              mix metadata and data together
+  features:
+        -n|--nodesize SIZE      size of btree nodes
+        -s|--sectorsize SIZE    data block size (may not be mountable by current kernel)
+        -O|--features LIST      comma separated list of filesystem features (use '-O
+list-all' to list features)
+        -L|--label LABEL        set the filesystem label
+        -U|--uuid UUID          specify the filesystem UUID (must be unique)
+  creation:
+        -b|--byte-count SIZE    set filesystem size to SIZE (on the first device)
+        -r|--rootdir DIR        copy files from DIR to the image root directory
+        -K|--nodiscard          do not perform whole device TRIM
+        -f|--force              force overwrite of existing filesystem
+  general:
+        -q|--quiet              no messages except errors
+        -V|--version            print the mkfs.btrfs version and exit
+        --help                  print this help and exit
+  deprecated:
+        -A|--alloc-start START  the offset to start the filesystem
+        -l|--leafsize SIZE      deprecated, alias for nodesize
+```
+
+- ```mkfs.btrfs -L butter /dev/sdb1``` - create file system based on **btrfs** with label **butter** and used GPT partition **/dev/sdb1**
+```
+btrfs-progs v4.9.1
+See http://btrfs.wiki.kernel.org for more information.
+
+Label:              butter
+UUID:               a181389f-27ac-4c61-9dde-205214c2cf43
+Node size:          16384
+Sector size:        4096
+Filesystem size:    512.00MiB
+Block group profiles:
+  Data:             single            8.00MiB
+  Metadata:         DUP              32.00MiB
+  System:           DUP               8.00MiB
+SSD detected:       no
+Incompat features:  extref, skinny-metadata
+Number of devices:  1
+Devices:
+   ID        SIZE  PATH
+    1   512.00MiB  /dev/sdb1
+```
+
+- ```mount``` - to check that partition mounted. 
+```
+/dev/sdb1 on /media/butter type btrfs (rw,relatime,seclabel,space_cache,subvolid=5,subvol=/)
+```
+
+###### 19.7 Mounting Partitions through etc fstab
+- ```/etc/fstab``` - configuration file of **fstab**. Where:
+    - ```/dev/sda3``` - device we want to mount
+    - ```/quota``` - mount point
+    - ```ext4``` - file system
+    - ```usrquota,grpquota``` - mount options, in case we need any. If you don't know which options to use, then use **default**
+```
+/dev/mapper/centos_centos-root /                       xfs     defaults                     0 0
+UUID=f8248240-363e-449b-98a8-25ad950f2430 /boot                   xfs     defaults          0 0
+/dev/mapper/centos_centos-swap swap                    swap    defaults                     0 0
+/dev/sda3                                              /quota     ext4    usrquota,grpquota 0 0 
+```
+
+- ```mount -a``` - to mount all devices indicated in **fstab** but not mounted yet. Or you can reboot, devices will be mounted automatically. 
+```
+/dev/sdb1 on /btrfs type btrfs (rw,relatime,seclabel,space_cache,subvolid=5,subvol=/)
+/dev/sdc1 on /ext4 type ext4 (rw,relatime,seclabel,data=ordered)
+/dev/sdc5 on /xfs type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+```
+
+- If we have some errors in ```/etc/fstab```, you'll receive an error when ```mount -a``` command executed:
+```
+[root@centos /]# mount -a
+mount: special device /dev/sdc7 does not exist
+```
+  
+```
+[root@centos /]# mount -a
+mount: wrong fs type, bad option, bad superblock on /dev/sdc5,
+       missing codepage or helper program, or other error
+
+       In some cases useful info is found in syslog - try
+       dmesg | tail or so.
+```
+
+- ```ls /usr/lib/systemd/system/ | grep  mount``` - new solution to mount file systems available. What is called **systemd** mount. 
+```
+dev-hugepages.mount                sys-fs-fuse-connections.mount
+dev-mqueue.mount                   sys-kernel-config.mount
+proc-sys-fs-binfmt_misc.automount  sys-kernel-debug.mount
+proc-sys-fs-binfmt_misc.mount      tmp.mount
+```
+
+- ```tmp.mount``` - will be used as an example to mount. 
+- ```sys-kernel-debug.mount``` where '-'(dashes) means **/sys/kernel/debug/** mount point. 
+- ```cp tmp.mount /etc/systemd/system/btrfs.mount``` - copy mount file. Don't forget to copy it under **/etc**, because it's custom configuration. 
+
+- ```vim /etc/systemd/system/btrfs.mount``` - let's modify content of this **mount** file. 
+
+```
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+
+[Unit]
+Description=Temporary Directory
+Documentation=man:hier(7)
+Documentation=http://www.freedesktop.org/wiki/Software/systemd/APIFileSystems
+DefaultDependencies=no
+Conflicts=umount.target
+Before=local-fs.target umount.target
+
+[Mount]
+What=/dev/sdb1
+Where=/btrfs
+Type=btrfs
+Options=defaults
+
+# Make 'systemctl enable tmp.mount' work:
+[Install]
+WantedBy=local-fs.target
+```
+
+- most important part is [Mount]. Same we did in fstab already. 
+```
+[Mount]
+What=/dev/sdb1
+Where=/btrfs
+Type=btrfs
+Options=defaults
+```
+
+- ```systemctl daemon-reload``` - reload daemon, so **systemd** will be aware of our changes. 
+- ```systemctl start btrfs.mount``` - mount our file system
+- ```mount``` - verify that our partition mounted. 
+```
+/dev/sdb1 on /btrfs type btrfs (rw,relatime,seclabel,space_cache,subvolid=5,subvol=/)
+```
+- ```systemctl status btrfs.mount``` - also accessible from systemctl
+```
+[root@centos system]# systemctl status btrfs.mount
+● btrfs.mount - Temporary Directory
+   Loaded: loaded (/etc/systemd/system/btrfs.mount; disabled; vendor preset: disabled)
+   Active: active (mounted) since Wed 2019-08-28 16:07:28 CEST; 1min 38s ago
+    Where: /btrfs
+     What: /dev/sdb1
+     Docs: man:hier(7)
+           http://www.freedesktop.org/wiki/Software/systemd/APIFileSystems
+  Process: 2782 ExecMount=/bin/mount /dev/sdb1 /btrfs -t btrfs -o defaults (code=exited, status=0/SUCCESS)
+   Memory: 148.0K
+
+Aug 28 16:07:28 centos.example.com systemd[1]: Mounting Temporary Directory...
+Aug 28 16:07:28 centos.example.com systemd[1]: Mounted Temporary Directory.
+```
