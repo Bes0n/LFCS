@@ -25,6 +25,7 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 18: Managing SELinux and AppArmor](#lesson-18-managing-selinux-and-apparmor)
 - [Module 5: Storage Management](#module-5-storage-management)
     - [Lesson 19: Managing Partitions](#lesson-19-managing-partitions)
+    - [Lesson 20: Managing LVM Logical Volumes](#lesson-20-managing-lvm-logical-volumes)
 
 ## Module 1: Essential Commands
 
@@ -3307,4 +3308,61 @@ Persistent=true
 
 [Install]
 WantedBy=multi-user.target
+```
+
+### Lesson 20: Managing LVM Logical Volumes
+###### 20.1 Understanding LVM
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img37.JPG)
+
+- Volume group - abstraction of all storage that you have on your system. 
+    - volume disk
+    - volume partition
+- On top of **volume group** you have **logical volumes**
+- On top of **logical volumes** you have your **file system** - **mkfs**, **mkswap** and so on. 
+- If you running out of space - you simply can add disk or partitions to your volume group. 
+
+###### 20.2 Creating LVM Logical Volumes
+- ```gdisk /dev/sdc``` - starting from partition creation. 
+- ```Hex code or GUID (L to show codes, Enter = 8300): 8e00``` - where **8e00** - Linux LVM partition type. 
+- ```gdisk -l /dev/sdb``` - verify your configuration
+```
+umber  Start (sector)    End (sector)  Size       Code  Name
+   1            2048         2099199   1024.0 MiB  8E00  Linux LVM
+```
+
+- ```pvcreate /dev/sdb1``` - create physical volume on our LVM partition. 
+```
+Physical volume "/dev/sdb1" successfully created.
+```
+
+- ```vgcreate vgdata /dev/sdb1``` - next we need to put physical volume in volume group. Let's create volume group. 
+```
+Volume group "vgdata" successfully created
+```
+
+- ```lvcreate -L 1020M -n lvdata vgdata``` - create logical volume with size **1020** megabytes and name **lvdata** using group **vgdata**
+```
+Logical volume "lvdata" created.
+```
+
+- ```lvs``` - list currently existing logical volumes. 
+```
+LV     VG            Attr       LSize    Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root   centos_centos -wi-ao----   <6.20g
+  swap   centos_centos -wi-ao----  820.00m
+  lvdata vgdata        -wi-a----- 1020.00m
+```
+
+- ```vgs``` - get information about volume groups. **PV** - physical volumes, **LV** - logical volumes. 
+```
+VG            #PV #LV #SN Attr   VSize    VFree
+  centos_centos   1   2   0 wz--n-   <7.00g    0
+  vgdata          1   1   0 wz--n- 1020.00m    0
+```
+
+- ```pvs``` - currently used physical volumes
+```
+  PV         VG            Fmt  Attr PSize    PFree
+  /dev/sda2  centos_centos lvm2 a--    <7.00g    0
+  /dev/sdb1  vgdata        lvm2 a--  1020.00m    0
 ```
