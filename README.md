@@ -328,11 +328,11 @@ Access for specific users managed by **visudo** command.
 ###### 5.5 Working on Linux from Graphical or Command Line Mode
 - ``` w ``` - get information about active terminals
 - ``` chvt ``` - switch to virtual terminal
-- ``` chvt 7 ``` - switch back to graphical interface
+- ``` chvt 7 ``` - switch back to terminal number 7. Depends of distribution where graphical interface located. 
 - ``` pts/0 ``` - information about user logged through ssh session
 
 ###### 5.6 Connecting Remotely to Linux
-- ``` sshd ``` - shell daemon
+- ``` sshd ``` - secure shell daemon
 - ``` telnetd ``` - insecure and should not be used anymore
 - ``` PuTTy ``` - remote ssh client for windows, nowadays powershell can be used
 - ```  VNC ``` - remote desktop client for Linux 
@@ -3191,6 +3191,7 @@ no label, UUID=7ffc7dc8-57fc-452f-9b51-2128d7ed2162
 
 - ```free -m``` - get information about **memory** and **swap**
 - ```swapon /dev/sdc5``` or ```swapoff /dev/sdc5``` - enable/disable our **swap** partition
+- ```swapon -s``` - to see which devices are currently used by **swap**
 ```
               total        used        free      shared  buff/cache   available
 Mem:            991         103         691           0         195         726
@@ -3216,3 +3217,94 @@ For encrypted devices we need underlying devices:
         - ```mkfs /dev/mapper/xyz``` - file system created
         - ```mount ...``` - mount your directory and start working on it. 
         - ```cryptsetup luksClose``` - once you done to work with your partition, **luksClose** will close your device and move back to **/dev/sdc1**
+
+###### 19.10 Configuring Encrypted Partitions
+- ```fdisk /dev/sdc``` - start from selecting device. 
+- ```/dev/sdc5``` - create logical partition on this step.
+- ```cryptsetup luksFormat /dev/sdc5``` - subcommand for starting formatting and setup. 
+```
+[root@centos ~]# cryptsetup luksFormat /dev/sdc5
+
+WARNING!
+========
+This will overwrite data on /dev/sdc5 irrevocably.
+
+```
+
+- enter passphrase, to encrypt your device. 
+
+```
+Are you sure? (Type uppercase yes): YES
+Enter passphrase for /dev/sdc5:
+Verify passphrase:
+```
+
+- ```xxd /dev/sdc5``` - shows content of the device. You can see it's encrypted. 
+```
+0000010: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+0000020: 0000 0000 0000 0000 7874 732d 706c 6169  ........xts-plai
+0000030: 6e36 3400 0000 0000 0000 0000 0000 0000  n64.............
+0000040: 0000 0000 0000 0000 7368 6132 3536 0000  ........sha256..
+0000050: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+0000060: 0000 0000 0000 0000 0000 1000 0000 0020  ...............
+0000070: 0cd0 06c8 981b 613a bd73 8a0f 4f33 546d  ......a:.s..O3Tm
+0000080: 0e0d a0b5 eaaf 5ff4 1f64 53b4 96e6 e68d  ......_..dS.....
+0000090: 0517 467a 862a 17f8 7ae0 ff14 c984 f60f  ..Fz.*..z.......
+00000a0: 351b b176 0000 5d05 3338 3462 3135 3435  5..v..].384b1545
+00000b0: 2d66 3032 322d 3431 3962 2d39 6162 652d  -f022-419b-9abe-
+00000c0: 3661 3765 6664 3666 6230 3666 0000 0000  6a7efd6fb06f....
+00000d0: 00ac 71f3 0006 9434 7b19 4368 0099 a073  ..q....4{.Ch...s
+00000e0: 97c0 12c6 77a5 8ab3 a06f f1b6 19a0 e704  ....w....o......
+00000f0: dbe0 3da7 4c69 fac2 0000 0008 0000 0fa0  ..=.Li..........
+0000100: 0000 dead 0000 0000 0000 0000 0000 0000  ................
+0000110: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+0000120: 0000 0000 0000 0000 0000 0108 0000 0fa0  ................
+0000130: 0000 dead 0000 0000 0000 0000 0000 0000  ................
+```
+
+- now we have encrypted device, we need following:
+    - open this device
+    - created file system on top of encrypted device.
+
+- ```cryptsetup luksOpen /dev/sdc5 secret``` - ppen device, don't forget to mention name of the device. We called it **secret**
+- ```Enter passphrase for /dev/sdc5:``` - to access it we need to enter passphrase. 
+- ```/dev/mapper/``` - resulting device will be created in this directory. 
+- ```mkfs.ext4 /dev/mapper/secret``` - create file system **ext4** on **/dev/mapper/secret** device. 
+- don't messup with creation file system on device **/dev/sdc5**, because that device contains **encryption layer**. We need ```/dev/mapper/secret``` - which is encrypted device.
+- ```mount /dev/mapper/secret /media/ext4/``` - mount created file system to the directory. 
+
+- ```vim /etc/crypttab``` - required to automate mount process of encrypted device. Add following line inside of this file. Name of the device we want to have - **secret**, name of the device we want to mount **/dev/sdc5**:
+```
+secret  /dev/sdc5
+```
+
+- ```vim /etc/fstab``` - second file to modify and add lines for ```/dev/mapper/secret``` device. 
+```
+/dev/mapper/secret                     /media/ext4     ext4    noauto          0 0 
+```
+
+- where **noauto** means - mount procedure will be done manually to avoid boot failure.
+
+###### 19.11 Working with SSD Disks
+- because of SSD disk doesn't clean properly we need **fstrim** utility, which is located in ```/usr/lib/systemd/```
+```
+[root@centos system]# ls -l fstrim.*
+-rw-r--r--. 1 root root  95 Mar 14 11:37 fstrim.service
+-rw-r--r--. 1 root root 174 Mar 14 11:37 fstrim.timer
+```
+
+- ```systemctl enable fstrim.timer``` - if you want to run this utility on regular basis - enable timer for **fstrim.service**
+```
+[root@centos system]# cat fstrim.timer
+[Unit]
+Description=Discard unused blocks once a week
+Documentation=man:fstrim
+
+[Timer]
+OnCalendar=weekly
+AccuracySec=1h
+Persistent=true
+
+[Install]
+WantedBy=multi-user.target
+```
