@@ -3399,3 +3399,45 @@ lrwxrwxrwx. 1 root root       7 Aug 29 16:07 vgdata-lvdata -> ../dm-2
 total 0
 lrwxrwxrwx. 1 root root 7 Aug 29 16:07 lvdata -> ../dm-2
 ```
+
+###### 20.4 Mounting LVM Volumes Persistently
+- ```mkdir /lvmountpoint``` - let's create mountpoint 
+- ```vim /etc/fstab``` - add lvm to the **fstab** for persistency.
+```
+/dev/mapper/vgdata-lvdata                 /lvmountpoint ext4    defaults 0 0
+```
+- ```mkfs.ext4 /dev/mapper/vgdata-lvdata``` - creata file system **ext4** before mount
+- ```mount -a``` - mount all items indicated in **/etc/fstab**
+- ```mount``` - get information about mounted devices.
+```
+/dev/mapper/vgdata-lvdata on /lvmountpoint type ext4 (rw,relatime,seclabel,data=ordered)
+```
+
+###### 20.5 Working with File System Label and UUID
+- ```tune2fs --help``` - in case if you want to make changes on already created **ext4** file system. 
+```
+Usage: tune2fs [-c max_mounts_count] [-e errors_behavior] [-g group]
+        [-i interval[d|m|w]] [-j] [-J journal_options] [-l]
+        [-m reserved_blocks_percent] [-o [^]mount_options[,...]] [-p mmp_update_interval]
+        [-r reserved_blocks_count] [-u user] [-C mount_count] [-L volume_label]
+        [-M last_mounted_dir] [-O [^]feature[,...]]
+        [-E extended-option[,...]] [-T last_check_time] [-U UUID]
+        [ -I new_inode_size ] device
+```
+
+- ```tune2fs -L lvdata /dev/vgdata/lvdata``` - we can create volume label for LVM device. 
+
+- ```vim /etc/fstab``` - now we can change device name indicated in **fstab** from **/dev/mapper/vgdata-lvdata** to **LABEL=lvdata** 
+```
+LABEL=lvdata              /lvmountpoint ext4    defaults 0 0
+```
+
+- ```blkid``` - list all **UUID's** for currently existing file systems. 
+```
+/dev/mapper/vgdata-lvdata: LABEL="lvdata" UUID="339fb123-bee6-41e4-accc-5cb1ca71204f" TYPE="ext4"
+```
+
+- ```vim /etc/fstab``` - so we can put **UUID** right here. Problem of UUID - they're unreadable. Better to use labeling. 
+```
+UUID="339fb123-bee6-41e4-accc-5cb1ca71204f"               /lvmountpoint ext4    defaults 0 0
+```
