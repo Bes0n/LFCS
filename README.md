@@ -3366,3 +3366,36 @@ VG            #PV #LV #SN Attr   VSize    VFree
   /dev/sda2  centos_centos lvm2 a--    <7.00g    0
   /dev/sdb1  vgdata        lvm2 a--  1020.00m    0
 ```
+
+###### 20.3 Understanding LVM Volume Naming
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img38.JPG)
+
+- Device Mapper used by:
+    - LVM
+    - luks
+
+- Device mapper will create devices when you create LVM: 
+    - /dev/dm-1
+    - /dev/dm-2
+
+- ```/dev/mapper/vg-lv``` - device mapper has directory **mapper**, where device will be created **symbolic link** with **vg-lv** name. Where **vg** - volume group name, **lv** - logical volume name. That symbolic link refers to **/dev/dm-1**
+- ```/dev/mapper/secret``` - encrypted device, which symbolic link will refer to **/dev/dm-2** device
+- ```/dev/vg/lv``` - another type of naming for LVM which will also refer too the same device **/dev/dm-1**
+
+- ```ls -l /dev/mapper``` - let's start from **/dev/mapper** directory. We can see **vgdata-lvdata** referring to the dm-2, logical volume that we created in previous steps. 
+
+```
+total 0
+lrwxrwxrwx. 1 root root       7 Aug 29 15:59 centos_centos-root -> ../dm-0
+lrwxrwxrwx. 1 root root       7 Aug 29 15:59 centos_centos-swap -> ../dm-1
+crw-------. 1 root root 10, 236 Aug 28 23:03 control
+lrwxrwxrwx. 1 root root       7 Aug 29 16:07 vgdata-lvdata -> ../dm-2
+```
+
+- ```/dev/vgdata/lvdata``` - same approach. We can find symbolic link here which also refers to **dm-2**
+
+```
+[root@centos vgdata]# ls -l
+total 0
+lrwxrwxrwx. 1 root root 7 Aug 29 16:07 lvdata -> ../dm-2
+```
