@@ -27,7 +27,8 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 19: Managing Partitions](#lesson-19-managing-partitions)
     - [Lesson 20: Managing LVM Logical Volumes](#lesson-20-managing-lvm-logical-volumes)
     - [Lesson 21: Managing Software RAID](#lesson-21-managing-software-raid)
-
+- [Module 6: Service Configuration](#module-6-service-configuration)
+    - [Lesson 22: Managing Web Services](#lesson-22-managing-web-services)
 ## Module 1: Essential Commands
 
 ### Lesson 1: Installing Linux
@@ -3643,3 +3644,7 @@ Consistency Policy : resync
 
 - ```mdadm --add /dev/md0 /dev/sde``` - add new device. 
 
+- ```mdadm --create /dev/md0 --level=5 --raid-devices=3 /dev/sdb1 /dev/sdc1 /dev/sdd1 --spare-devices=1 /dev/sde1``` - create RAID 5, with 3 active and 1 spare devices. 
+
+## Module 6: Service Configuration
+### Lesson 22: Managing Web Services
