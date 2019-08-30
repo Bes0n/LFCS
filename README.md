@@ -26,6 +26,7 @@ Preparation for Linux Foundation Certified System Administrator
 - [Module 5: Storage Management](#module-5-storage-management)
     - [Lesson 19: Managing Partitions](#lesson-19-managing-partitions)
     - [Lesson 20: Managing LVM Logical Volumes](#lesson-20-managing-lvm-logical-volumes)
+    - [Lesson 21: Managing Software RAID](#lesson-21-managing-software-raid)
 
 ## Module 1: Essential Commands
 
@@ -3441,3 +3442,204 @@ LABEL=lvdata              /lvmountpoint ext4    defaults 0 0
 ```
 UUID="339fb123-bee6-41e4-accc-5cb1ca71204f"               /lvmountpoint ext4    defaults 0 0
 ```
+
+###### 20.6 Understanding LVM Resize Operations
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img39.JPG)
+
+- LVM structure:
+    - device
+    - physical volume
+    - volume group
+    - logical volume
+    - file system
+
+- ```lvresize``` - In order to make **File System** bigger, we need to be sure that it's available on **Logical Volume** and resize it.
+
+- ```vgresize``` - If disk space is not available in **volume group**, we have to resize it
+
+- You have to put **physical volume** in **volume group** to be able to resize **volume group**
+
+
+###### 20.7 Resizing LVM Logical Volumes
+- ```df -H``` - get information about file system
+```
+Filesystem                      Size  Used Avail Use% Mounted on
+/dev/mapper/centos_centos-root  6.7G  1.8G  5.0G  26% /
+devtmpfs                        508M     0  508M   0% /dev
+tmpfs                           520M     0  520M   0% /dev/shm
+tmpfs                           520M  545k  520M   1% /run
+tmpfs                           520M     0  520M   0% /sys/fs/cgroup
+/dev/sda1                       1.1G  203M  861M  20% /boot
+tmpfs                           104M     0  104M   0% /run/user/1000
+/dev/mapper/vgdata-lvdata       1.1G  2.7M  964M   1% /lvmountpoint
+```
+
+- ```vgs``` - information about volume group 
+```
+VG            #PV #LV #SN Attr   VSize    VFree
+  centos_centos   1   2   0 wz--n-   <7.00g    0
+  vgdata          1   1   0 wz--n- 1020.00m    0
+```
+
+- ```pvs``` - information about physical volume
+```
+PV         VG            Fmt  Attr PSize    PFree
+  /dev/sda2  centos_centos lvm2 a--    <7.00g    0
+  /dev/sdb1  vgdata        lvm2 a--  1020.00m    0
+```
+
+- ```gdisk /dev/sdc``` - create new partition with **8E00** (Linux LVM) code. 
+
+- ```vgextend --help``` - for resizing volume group
+```
+vgextend - Add physical volumes to a volume group
+
+  vgextend VG PV ...
+        [ -A|--autobackup y|n ]
+        [ -f|--force ]
+        [ -Z|--zero y|n ]
+        [ -M|--metadatatype lvm2|lvm1 ]
+        [    --labelsector Number ]
+        [    --metadatasize Size[m|UNIT] ]
+        [    --pvmetadatacopies 0|1|2 ]
+        [    --metadataignore y|n ]
+        [    --dataalignment Size[k|UNIT] ]
+        [    --dataalignmentoffset Size[k|UNIT] ]
+        [    --reportformat basic|json ]
+        [    --restoremissing ]
+        [ COMMON_OPTIONS ]
+
+  Common options for lvm:
+        [ -d|--debug ]
+        [ -h|--help ]
+        [ -q|--quiet ]
+        [ -v|--verbose ]
+        [ -y|--yes ]
+        [ -t|--test ]
+        [    --commandprofile String ]
+        [    --config String ]
+        [    --driverloaded y|n ]
+        [    --lockopt String ]
+        [    --longhelp ]
+        [    --profile String ]
+        [    --version ]
+
+  Use --longhelp to show all options and advanced commands.
+```
+
+- ```vgextend vgdata /dev/sdc1``` - extend volume group by indicating volume group name **vgata** and physical volume **dev/sdc1**. We can see now 496.00MB free space and 2 physical volumes. 
+```
+[root@centos vgdata]# vgs
+  VG            #PV #LV #SN Attr   VSize  VFree
+  centos_centos   1   2   0 wz--n- <7.00g      0
+  vgdata          2   1   0 wz--n-  1.48g 496.00m
+```
+
+- ```lvextend --help``` - resize command for logical volume.
+    - ```-L|--size [+]Size[m|UNIT] LV``` - to extend space by numbers indication (like +100M)
+    - ``` -l|--extents [+]Number[PERCENT]``` - extend by % of free space. (-l +100%FREE)
+    - ``` -r|--resizefs``` - automatically resize file system too 
+
+- ```lvextend -l +100%FREE -r /dev/mapper/vgdata-lvdata``` - resize logical volume. 
+```
+  Size of logical volume vgdata/lvdata changed from 1020.00 MiB (255 extents) to 1.48 GiB (379 extents).
+  Logical volume vgdata/lvdata successfully resized.
+resize2fs 1.42.9 (28-Dec-2013)
+Filesystem at /dev/mapper/vgdata-lvdata is mounted on /lvmountpoint; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 1
+The filesystem on /dev/mapper/vgdata-lvdata is now 388096 blocks long.
+```
+
+### Lesson 21: Managing Software RAID
+###### 21.1 Understanding RAID Solutions
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img40.JPG)
+- RAID's
+    - RAID 0: no redundancy and no easy recover.
+    - RAID 1: 2 disks written all times and identical. 
+    - RAID 5: parity information - checksum of the disks. Which can be calculated in case of failure and restore your data. 
+    - RAID 6: exhancement of the RAID 5 - with dual distributed parity
+    - RAID 10: mix of RAID 0 and RAID 1, you will have big amount of data and mirrored in the same time. 
+
+###### 21.2 Creating a Software RAID Volume
+- create two GPT partitions with ```gdisk``` and select **FD00** code for **Linux RAID**
+- ```mdadm --create /dev/md0 --level=1 --raid-disks=2 /dev/sdd2 /dev/sde1```:
+    - ```md``` - multiple device 
+    - ```adm``` - admin
+    - ```--create ``` - create device **/dev/md0** 
+    - ```--level=1```- RAID level is 1 (mirroring)
+    - ```--raid-disks=2``` - disks count
+    - ```/dev/sdd2 /dev/sde1``` - device names
+```
+mdadm: Note: this array has metadata at the start and
+    may not be suitable as a boot device.  If you plan to
+    store '/boot' on this device please ensure that
+    your boot-loader understands md/v1.x metadata, or use
+    --metadata=0.90
+Continue creating array? y
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md0 started.
+```
+
+- ```mkfs.ext4 /dev/md0``` - create filesystem on our RAID device. - ```mdadm --detail --scan >> /etc/mdadm.conf``` - write configuration to the configuration file. This file helps to **reinitialize** RAID device after **reboot**
+```
+[root@centos ~]# cat /etc/mdadm.conf
+ARRAY /dev/md0 metadata=1.2 name=centos.example.com:0 UUID=8d13efce:eb82a88a:7c16eb8b:18f7d075
+```
+- ```vim /etc/fstab``` - configuration can be added in **fstab** for persistency. 
+```
+/dev/md0                       /raid                   ext4    defaults        0 0
+```
+
+- ```cat /proc/mdstat``` or ```mdadm --detail /dev/md0``` - get information about your RAID
+```
+Personalities : [raid1]
+md0 : active raid1 sdb1[1] sdc1[0]
+      1022976 blocks super 1.2 [2/2] [UU]
+
+unused devices: <none>
+```
+  
+```
+[root@centos ~]# mdadm --detail /dev/md0
+/dev/md0:
+           Version : 1.2
+     Creation Time : Fri Aug 30 15:44:52 2019
+        Raid Level : raid1
+        Array Size : 1022976 (999.00 MiB 1047.53 MB)
+     Used Dev Size : 1022976 (999.00 MiB 1047.53 MB)
+      Raid Devices : 2
+     Total Devices : 2
+       Persistence : Superblock is persistent
+
+       Update Time : Fri Aug 30 15:51:36 2019
+             State : clean
+    Active Devices : 2
+   Working Devices : 2
+    Failed Devices : 0
+     Spare Devices : 0
+
+Consistency Policy : resync
+
+              Name : centos.example.com:0  (local to host centos.example.com)
+              UUID : 8d13efce:eb82a88a:7c16eb8b:18f7d075
+            Events : 17
+
+    Number   Major   Minor   RaidDevice State
+       0       8       33        0      active sync   /dev/sdc1
+       1       8       17        1      active sync   /dev/sdb1
+```
+
+###### 21.3 Recovering After Failing Disks
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img41.JPG)
+
+- ```mdadm --create /dev/md0 -l 5 -x 1 /dev/sdb /dev/sdc /dev/sdd /dev/sde```
+    - ```-l 5``` - RAID level 5
+    - ```-x 1``` - one hot spare
+
+- ```mdadm --fail /dev/md0 /dev/sdb``` - failed device, we can see in syslog that it starts generating an errors
+
+- ```mdadm --remove /dev/md0 /dev/sdb``` - remove device after failure from RAID array. 
+
+- ```mdadm --add /dev/md0 /dev/sde``` - add new device. 
+
