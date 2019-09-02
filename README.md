@@ -29,6 +29,9 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 21: Managing Software RAID](#lesson-21-managing-software-raid)
 - [Module 6: Service Configuration](#module-6-service-configuration)
     - [Lesson 22: Managing Web Services](#lesson-22-managing-web-services)
+    - [Lesson 23: Configuring FTP Services](#lesson-23-configuring-ftp-services)
+    - [Lesson 24: Configuring a Basic DNS Server](#lesson-24-configuring-a-basic-dns-server)
+
 ## Module 1: Essential Commands
 
 ### Lesson 1: Installing Linux
@@ -3676,3 +3679,48 @@ Consistency Policy : resync
         ServerName account.example.com
         </VirtualHost>
         ```
+    - ```mkdir /web/account``` - create directory for configuration we've just specified. 
+        - ```vim index.html``` - let's create welcome file in that directory
+
+### Lesson 23: Configuring FTP Services
+###### 23.1 Understanding Linux FTP Solutions
+- ```vsftpd``` - commonly used FTP solution - **Very Secure FTP daemon**
+- ```pureftpd``` - **Pure very simple** FTP process
+
+###### 23.2 Configuring a Basic FTP Server
+- ```yum install vsftpd-3.0.2-25.el7.x86_64``` - install **vsftpd**
+- ```systemctl enable --now vsftpd``` - start and enable **vsftpd**
+- ```/etc/vsftpd/vsftpd.conf``` - configuration file of **vsftpd**
+```
+anonymous_enable=YES
+local_enable=YES
+write_enable=YES
+local_umask=022
+```
+- ```yum install lftp``` - for testing we will install **lftp** client.
+- ```[root@centos vsftpd]# lftp localhost``` - connect to localhost as a client
+```
+lftp localhost:~>
+lftp localhost:~> ls
+drwxr-xr-x    2 0        0               6 Oct 30  2018 pub
+lftp localhost:/> cd pub/
+lftp localhost:/pub> ls
+```
+
+- ```grep ftp /etc/passwd``` - let's find home directory of **ftp** user. We can see same directory **pub** in **/var/ftp/**
+```
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+```
+
+- ```cd /var/ftp/pub``` - let's move here and create few files. We can see files from lftp client too. 
+```
+lftp localhost:/pub> ls
+-rw-r--r--    1 0        0               0 Sep 02 09:34 a
+-rw-r--r--    1 0        0               0 Sep 02 09:34 b
+-rw-r--r--    1 0        0               0 Sep 02 09:34 c
+```
+
+- ```lftp localhost:/pub>get a``` - download file **a** from ftp server. 
+
+### Lesson 24: Configuring a Basic DNS Server
+###### 24.1 Understanding DNS
