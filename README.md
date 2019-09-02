@@ -3669,10 +3669,10 @@ Consistency Policy : resync
 ```
 - ```cd /etc/httpd/conf.d/``` - create virtual host configuration here with separate configuration files for each virtual host. 
     - ```vim account.example.com.conf```
-    ```
-    <VirtualHost *:80>
-    ServerAdmin webmaster@account.example.com
-    DocumentRoot /web/account
-    ServerName account.example.com
-    </VirtualHost>
-    ```
+        ```
+        <VirtualHost *:80>
+        ServerAdmin webmaster@account.example.com
+        DocumentRoot /web/account
+        ServerName account.example.com
+        </VirtualHost>
+        ```
