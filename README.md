@@ -3648,3 +3648,31 @@ Consistency Policy : resync
 
 ## Module 6: Service Configuration
 ### Lesson 22: Managing Web Services
+- ```systemctl status httpd``` - check status of **apache**
+- ```/var/www/``` - webserver document root
+- ```/etc/httpd/``` - configuration files of apache. 
+    - ```conf``` - main configuration file 
+    - ```conf.d``` - additional configuration file. 
+    - ```conf.modules.d``` - more additional configuration
+
+###### 22.2 Configuring Virtual Hosts
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img42.JPG)
+- ```httpd``` - can run several virtual hosts. 
+    - ```sales.example.com``` - each virtual host has it's own configuration
+        - document root
+    - ```account.example.com``` - each virtual host has it's own configuration
+        - document root
+- ```/etc/hosts``` - virtual hosts starts with name resolution
+```
+10.0.2.15   account.example.com
+10.0.2.15   sales.example.com
+```
+- ```cd /etc/httpd/conf.d/``` - create virtual host configuration here with separate configuration files for each virtual host. 
+    - ```vim account.example.com.conf```
+    ```
+    <VirtualHost *:80>
+    ServerAdmin webmaster@account.example.com
+    DocumentRoot /web/account
+    ServerName account.example.com
+    </VirtualHost>
+    ```
