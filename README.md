@@ -34,6 +34,8 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 25: Providing NFS and CIFS File Shares](#lesson-25-providing-nfs-and-cifs-file-shares)
     - [Lesson 26: Configuring a Database Server](#lesson-26-configuring-a-database-server)
     - [Lesson 27: Configuring Basic E-mail Handling](#lesson-27-configuring-basic-e-mail-handling)
+    - [Lesson 28: Configuring a Web Proxy](#lesson-28-configuring-a-web-proxy)
+
 
 ## Module 1: Essential Commands
 
@@ -3921,3 +3923,70 @@ MariaDB [people]>
 ``` 
 
 ### Lesson 27: Configuring Basic E-mail Handling
+###### 27.1 Understanding E mail Handling
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img44.JPG)
+
+- ```null client``` - linux server that is running **SMTP** process
+- ```forwarder``` or ```SMTP Server``` - e-mail server which is capable to send e-mails to the rest of the world. 
+- ```IMAP/POP SMTP``` - Protocols which are used for receiving e-mails. 
+
+###### 27.2 Configuring Postfix for E-mail Delivery
+- ```systemctl status postfix``` - check status of **postfix**
+- ```/etc/postfix``` - main directory of **postfix**
+    - ```main.cf``` - postfix configuration file.
+        - ```inet_interfaces = localhost``` - your postfix won't accept any incoming messages. we can see it from ```netstat -tulpen``` command. Server listens only to localhost
+        ```
+        tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      0          56313      7576/master
+        ```
+        - ```relayhost = [an.ip.add.ress]``` - relay messages to another host. You can define name or IP address. 
+        ```
+        #relayhost = $mydomain
+        #relayhost = [gateway.my.domain]
+        #relayhost = [mailserver.isp.tld]
+        #relayhost = uucphost
+        #relayhost = [an.ip.add.ress]
+        ```
+
+###### 27.3 Configuring Postfix for Local E mail Reception
+- ```/etc/postfix/main.cf``` - we will configure this file
+    - ```inet_interfaces = all``` - list on all internet interfaces. 
+    - ```myorigin = $mydomain``` - from where message comes from. In our case domain part will be used. For instance **linda@example.com**
+    - ```relayhost = [10.0.10.11]``` - to which host forward your messages. 
+    - ```mynetworks = 10.0.10.0/24``` - receive packages only from local network.  
+    - ```inet_protocols = all``` - which protocols to use (IPv4, IPv6), better to use **ipv4**, because for **ipv6** we need fully working IPv6 environment.
+
+### Lesson 28: Configuring a Web Proxy
+###### 28.1 Understanding Web Proxies
+- ```Web Proxy``` stands for:
+    - prevent direct access to the Internet
+    - cache frequently accesses web pages
+    - filtering or content filtering
+    - works with **http** and **ftp** traffic mostly
+
+###### 28.2 Configuring a Basic Squid Proxy
+- ```yum install squid``` - install **squid** package
+- ```/etc/squid``` - directory of **squid**
+    - ```squid.conf``` - configuration file. Where default configuration already set up.
+
+    ```
+    acl localnet src 10.0.0.0/8     # RFC1918 possible internal network
+    acl localnet src 172.16.0.0/12  # RFC1918 possible internal network
+    acl localnet src 192.168.0.0/16 # RFC1918 possible internal network
+    acl localnet src fc00::/7       # RFC 4193 local private network range
+    acl localnet src fe80::/10      # RFC 4291 link-local (directly plugged) machines
+
+    acl SSL_ports port 443
+    acl Safe_ports port 80          # http
+    acl Safe_ports port 21          # ftp
+    acl Safe_ports port 443         # https
+    acl Safe_ports port 70          # gopher
+    acl Safe_ports port 210         # wais
+    acl Safe_ports port 1025-65535  # unregistered ports
+    acl Safe_ports port 280         # http-mgmt
+    acl Safe_ports port 488         # gss-http
+    acl Safe_ports port 591         # filemaker
+    acl Safe_ports port 777         # multiling http
+    acl CONNECT method CONNECT
+    ```
+
+- ```netstat -tulpen | less``` - search for **port** which squid is using. tcp port is **3128**
