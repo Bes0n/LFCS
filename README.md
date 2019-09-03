@@ -3994,7 +3994,7 @@ MariaDB [people]>
 - ```netstat -tulpen | less``` - search for **port** which squid is using. tcp port is **3128**
   
 
-##Module 7: Managing Virtualization
+## Module 7: Managing Virtualization
 ### Lesson 29: Working with Virtual Machines
 ###### 29.1 Understanding Linux Virtualization Solutions
 - Linux Virtualization Solutions:
