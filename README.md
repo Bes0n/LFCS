@@ -3919,3 +3919,5 @@ MariaDB [people]>
 +-----------+----------+-----------+
 1 row in set (0.00 sec)
 ``` 
+
+### Lesson 27: Configuring Basic E-mail Handling
