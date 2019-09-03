@@ -31,6 +31,9 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 22: Managing Web Services](#lesson-22-managing-web-services)
     - [Lesson 23: Configuring FTP Services](#lesson-23-configuring-ftp-services)
     - [Lesson 24: Configuring a Basic DNS Server](#lesson-24-configuring-a-basic-dns-server)
+    - [Lesson 25: Providing NFS and CIFS File Shares](#lesson-25-providing-nfs-and-cifs-file-shares)
+    - [Lesson 26: Configuring a Database Server](#lesson-26-configuring-a-database-server)
+
 
 ## Module 1: Essential Commands
 
@@ -3724,3 +3727,139 @@ lftp localhost:/pub> ls
 
 ### Lesson 24: Configuring a Basic DNS Server
 ###### 24.1 Understanding DNS
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img43.JPG)
+- ```.``` - local DNS going to the root domain, presented as a dot. 
+- ```?com``` - DNS server asking root domain can I get list of all **com** domains
+- ```?rhatcert``` - DNS server asking **com** domain to get list of all **rhatcert** name services.  
+- DNS server has **cache**. Directly will provide information from **cache** to the client.
+- DNS server with **cache-only** - building this kind of server makes lookup process a lot of faster. 
+
+###### 24.2 Configuring a Forwarding DNS Server (cache-only)
+- ```yum install unbound``` - we will start from **unbound** installation
+- ```iptables -A INPUT -p udp --dport 53``` - allow DNS port in iptables
+- ```iptables -A INPUT -p tcp --dport 53``` - in case if packages get too big switches to **tcp** port. 
+- ```/etc/unbound/unbound.conf``` - configuration file of **unbound**
+    - ```interface: 0.0.0.0``` - select interface, because by default it listens only on localhost. We want server be accessible to others as well. 
+    - ```access-control: 10.0.0.0/16 allow``` - allow access to the IP addresses which starts from **10.0......**
+    - ```domain-insecure: "example.com"``` - uncomment it in case if you don't have **dns-sec** in your system 
+    - ```forward-zone``` - next important parameter. What to forward and where. We want to forward everything, which indicated as '.' and forward-addr, because we don't have our DNS server, we're forwarding it to the Google's DNS server. 
+    ```
+    forward-zone:
+        name: "."
+        forward-addr: 8.8.8.8
+    ```
+
+- ```netstat -tulpen``` - get information about ports and processes which use these ports. 
+```
+tcp6       0      0 ::1:8953                :::*                    LISTEN      0          34018      3473/unbound
+tcp6       0      0 ::1:25                  :::*                    LISTEN      0          21369      1279/master
+tcp6       0      0 :::80                   :::*                    LISTEN      0          27331      2398/httpd
+tcp6       0      0 :::8080                 :::*                    LISTEN      0          27327      2398/httpd
+tcp6       0      0 :::21                   :::*                    LISTEN      0          27790      2468/vsftpd
+tcp6       0      0 :::22                   :::*                    LISTEN      0          20712      1035/sshd
+udp        0      0 0.0.0.0:53              0.0.0.0:*                           0          34016      3473/unbound
+udp        0      0 0.0.0.0:53              0.0.0.0:*                           0          34014      3473/unbound
+udp        0      0 0.0.0.0:53              0.0.0.0:*                           0          34012      3473/unbound
+udp        0      0 0.0.0.0:53              0.0.0.0:*                           0          34010      3473/unbound
+udp        0      0 0.0.0.0:68              0.0.0.0:*                           0          19303      800/dhclient
+udp        0      0 0.0.0.0:123             0.0.0.0:*                           0          17305      723/chronyd
+udp        0      0 127.0.0.1:323           0.0.0.0:*                           0          17302      723/chronyd
+udp6       0      0 ::1:323                 :::*                                0          17303      723/chronyd
+```
+
+- ```[root@centos system]# which vsftpd``` - search from where process comes from. 
+```
+/sbin/vsftpd
+```
+
+- ```[root@centos system]# rpm -qf /sbin/vsftpd``` - Query package owning FILE 
+```
+vsftpd-3.0.2-25.el7.x86_64
+```
+
+- ````systemctl status unbound``` - get informatio about **unbound** service
+```
+● unbound.service - Unbound recursive Domain Name Server
+   Loaded: loaded (/usr/lib/systemd/system/unbound.service; enabled; vendor preset: disabled)
+   Active: active (running) since Mon 2019-09-02 14:37:45 CEST; 10min ago
+  Process: 3470 ExecStartPre=/usr/sbin/unbound-anchor -a /var/lib/unbound/root.key -c /etc/unbound/icannbundle.pem (code=exited, status=0/SUCCESS)
+  Process: 3469 ExecStartPre=/usr/sbin/unbound-checkconf (code=exited, status=0/SUCCESS)
+ Main PID: 3473 (unbound)
+   Memory: 20.5M
+   CGroup: /system.slice/unbound.service
+           └─3473 /usr/sbin/unbound -d
+```
+
+### Lesson 25: Providing NFS and CIFS File Shares
+###### 25.2 Configuring a Basic NFS Server
+- ```systemctl status nfs-server``` - get status of **NFS** server. 
+- ```/etc/exports``` - file where we need to specify our configuration.
+    - ```/share``` - directory for sharing
+    - ```*``` - accessible to everyone
+    - ```(rw,no_root_squash)``` - read-write access to all users, except **root**, but we used ```no_root_squash```, so client's **root** user will be able to access NFS too
+```
+/share *(rw) or /share *(rw,no_root_squash)
+```
+  
+- ```showmount -e localhost``` - export list for localhost. Prove of that your **NFS** is working 
+```
+Export list for localhost:
+/share *
+```
+
+###### 25.3 Mounting an NFS Share Persistently
+- ```mount centos:/share /centos/nfs``` - mount your shared directory **/share** from **centos** machine under **/centos/nfs** directory
+- for adding persistency we need to add line in **/etc/fstab** file
+    - ```nfs``` - file system
+    - ```_netdev``` - because this is a network device. 
+```
+centos:/share     /centos/nfs   nfs   _netdev   0 0 
+```
+
+###### 25.4 Configuring a Basic Samba Server
+- ```yum install samba``` - start from samba installation
+    - ```/etc/samba/smb.conf``` - configuration file of **samba**
+    - ```/etc/samba/smb.conf.example``` - better use this file, it contains a lot of examples inside.
+- ```chcon -t samba_share_t /path/to/directory``` - CentOS managed by **SELinux** so context type is also required during Samba configuration. 
+- ```smbpasswd -a anna``` - create samba user **anna**, user should exists on linux system already. 
+```
+[root@centos /]# smbpasswd -a anna
+New SMB password:
+Retype new SMB password:
+Added user anna.
+```
+
+- ```yum install samba-client``` - we need **samba-client** to verify that we installed everything properly. 
+- ```smbclient -L localhost``` - access localhost through samba-client
+```
+Enter MYGROUP\root's password:
+Anonymous login successful
+
+        Sharename       Type      Comment
+        ---------       ----      -------
+        share           Disk      Samba Share
+        IPC$            IPC       IPC Service (Samba Server Version 4.8.3)
+Reconnecting with SMB1 for workgroup listing.
+Anonymous login successful
+
+        Server               Comment
+        ---------            -------
+
+        Workgroup            Master
+        ---------            -------
+```
+
+- ```mount -o username=anna //10.0.10.11/share /mnt``` - for temporary mount
+- ```vim /etc/fstab``` - to add our configuration persistently
+```
+//centos/share   /centos/samba  cifs   _netdev,username=anna,password=P@ssw0rd   0 0
+```
+
+###Lesson 26: Configuring a Database Server
+###### 26.1 Understanding Linux Database Solutions
+- Database Solutions:
+    - MariaDB
+    - PostgreSQL
+    - MongoDB
+    - MSSQL
+
