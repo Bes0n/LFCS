@@ -35,7 +35,8 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 26: Configuring a Database Server](#lesson-26-configuring-a-database-server)
     - [Lesson 27: Configuring Basic E-mail Handling](#lesson-27-configuring-basic-e-mail-handling)
     - [Lesson 28: Configuring a Web Proxy](#lesson-28-configuring-a-web-proxy)
-
+- [Module 7: Managing Virtualization](#module-7-managing-virtualization)
+    - [Lesson 29: Working with Virtual Machines](#lesson-29-working-with-virtual-machines)
 
 ## Module 1: Essential Commands
 
@@ -250,6 +251,7 @@ Undo:
 - ``` g ``` - top of the document
 - ``` G ``` - bottom of the document 
 - ``` /text ``` - search for text
+- ``` :noh ``` - disable higlight for current search
 - ``` n, N ``` - switch for next inside of search 
 - ``` :300 ``` - go to line 300 
 - ``` dd, x ``` - delete line 
@@ -3990,3 +3992,17 @@ MariaDB [people]>
     ```
 
 - ```netstat -tulpen | less``` - search for **port** which squid is using. tcp port is **3128**
+  
+
+##Module 7: Managing Virtualization
+### Lesson 29: Working with Virtual Machines
+###### 29.1 Understanding Linux Virtualization Solutions
+- Linux Virtualization Solutions:
+    - **Hypervisor based** -  will use linux a **virtualization server**. You won't be do anything else on your linux machine
+        - **KVM** - Kernel Virtual Machine. Part of Linux Kernel
+        - **Xen** - Was quite popular. Started in 2004. 
+    - **Worstation based** - virtualization **application** that runs on top of **Linux Kernel**. Slower that **Hypervisor based** solution. Because application sents information to the Kernel and only then to the hardware.  
+        - **Virtualbox**
+        - **VMware Workstation**
+
+###### 29.2 Creating a KVM Virtual Machine
