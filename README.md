@@ -33,7 +33,7 @@ Preparation for Linux Foundation Certified System Administrator
     - [Lesson 24: Configuring a Basic DNS Server](#lesson-24-configuring-a-basic-dns-server)
     - [Lesson 25: Providing NFS and CIFS File Shares](#lesson-25-providing-nfs-and-cifs-file-shares)
     - [Lesson 26: Configuring a Database Server](#lesson-26-configuring-a-database-server)
-
+    - [Lesson 27: Configuring Basic E-mail Handling](#lesson-27-configuring-basic-e-mail-handling)
 
 ## Module 1: Essential Commands
 
@@ -3881,13 +3881,16 @@ Anonymous login successful
     ... Success!
     ```
     - ```Remove anonymous users? [Y/n] Y``` - remove anonymous users
+      
     ```
     Normally, root should only be allowed to connect from 'localhost'.  This
     ensures that someone cannot guess at the root password from the network.
     ```
+      
     - ```Disallow root login remotely? [Y/n] Y``` - for security purpopes it's a good idea.
     - ```Remove test database and access to it? [Y/n] Y``` - we don't need any test database. 
     - ```Reload privilege tables now? [Y/n] Y``` - new settings are becoming effective. 
+      
     ```
     Cleaning up...
 
@@ -3897,3 +3900,22 @@ Anonymous login successful
     Thanks for using MariaDB!
     ```
 
+###### 26.3 Creating a Simple Database
+- ```mysql -u root -p``` - connect to **MariaDB** as a root user and prompt for a password. 
+- ```MariaDB [(none)]> create database people;``` - create **database** with name **people**
+- ```MariaDB [(none)]> use people;``` - connect to **people** database
+```
+Database changed
+MariaDB [people]> 
+```
+- ```MariaDB [people]> create table users(firstname VARCHAR(20), lastname VARCHAR(20), birthyear INT);``` - create table named **users** with data inside.
+- ```MariaDB [people]> INSERT INTO users(firstname,lastname,birthyear) values('Linda', 'Thompsen', 1972);``` - insert data into columns. 
+- ```MariaDB [people]> select * from users;``` - select data from table **users**
+```
++-----------+----------+-----------+
+| firstname | lastname | birthyear |
++-----------+----------+-----------+
+| Linda     | Thompsen |      1972 |
++-----------+----------+-----------+
+1 row in set (0.00 sec)
+``` 
