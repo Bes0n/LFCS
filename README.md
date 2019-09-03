@@ -3863,3 +3863,37 @@ Anonymous login successful
     - MongoDB
     - MSSQL
 
+###### 26.2 Installing MariaDB
+- ```yum search mariadb``` - we will start from the installation
+    - ```yum install mariadb```
+    - ```yum install mariadb-server```
+
+- ```systemctl enable --now mariadb``` - enable and start service **mariadb** 
+
+- ```mysql_secure_installation``` - start **MariaDB** configuration
+    - ```Enter current password for root (enter for none):``` - we don't have password for root yet. Just enter. 
+    - ```Set root password? [Y/n] Y``` - set **root** password
+    ```
+    New password:
+    Re-enter new password:
+    Password updated successfully!
+    Reloading privilege tables..
+    ... Success!
+    ```
+    - ```Remove anonymous users? [Y/n] Y``` - remove anonymous users
+    ```
+    Normally, root should only be allowed to connect from 'localhost'.  This
+    ensures that someone cannot guess at the root password from the network.
+    ```
+    - ```Disallow root login remotely? [Y/n] Y``` - for security purpopes it's a good idea.
+    - ```Remove test database and access to it? [Y/n] Y``` - we don't need any test database. 
+    - ```Reload privilege tables now? [Y/n] Y``` - new settings are becoming effective. 
+    ```
+    Cleaning up...
+
+    All done!  If you've completed all of the above steps, your MariaDB
+    installation should now be secure.
+
+    Thanks for using MariaDB!
+    ```
+
