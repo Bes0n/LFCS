@@ -4006,3 +4006,21 @@ MariaDB [people]>
         - **VMware Workstation**
 
 ###### 29.2 Creating a KVM Virtual Machine
+- ```yum group list``` - get list of available groups in **YUM**
+- ```yum groupinstall 'Virtualization Host'``` - install all required packages for **Virtualization Host**
+- ```systemctl enable --now libvirtd``` - start **virtualization daemon**
+- ```yum install virt-manager``` - package required for managing VM's on your host. 
+- ```virt-manager``` - to run GUI application.
+    - create new VM
+    - create virtual storage
+    - mount .ISO 
+    - install operating system
+
+![img](https://github.com/Bes0n/LFCS/blob/master/images/img45.JPG)
+
+###### 29.3 Managing KVM Virtual Machines
+- ```virsh``` - the most usable command for managing your KVM machines. 
+    - ```virsh list --all``` - list all virtual machines, even Turned off
+    - ```virsh start centos7.0``` - start your VM with name **centos7.0**
+    - ```virsh shutdown centos7.0``` - gracefull shutdown of your **centos7.0**
+    - ```virsh autostart centos7.0``` - when host started, your VM will start automatically.  
