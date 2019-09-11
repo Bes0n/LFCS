@@ -3781,7 +3781,7 @@ udp6       0      0 ::1:323                 :::*                                
 vsftpd-3.0.2-25.el7.x86_64
 ```
 
-- ````systemctl status unbound``` - get informatio about **unbound** service
+- ```systemctl status unbound``` - get informatio about **unbound** service
 ```
 ● unbound.service - Unbound recursive Domain Name Server
    Loaded: loaded (/usr/lib/systemd/system/unbound.service; enabled; vendor preset: disabled)
