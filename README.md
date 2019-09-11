@@ -985,7 +985,7 @@ Leap status     : Normal
 - modify your **/etc/chrony.conf** file and uncomment following lines (to allow local clients use your ntp server in network):  
 ```
 # Allow NTP client access from local network.
-allow 10.0.10.0/16
+allow 10.0.10.0/24
 ```
 
 Go to your client and configure ``` /etc/ntp.conf ```. Where as a **server** you need to specify your NTP server and comment out pool or servers:  
