@@ -139,7 +139,7 @@ Example: ``` ls [a-d]??* ``` - list word starting with 'a' to 'd', have '??' at 
 
 ###### 3.4 Copying files with cp
 - ``` cp /etc/hosts . ``` - copy hosts files in home directory
-- ``` cp -R /tmp . ``` - copy entire subdirectoy structure in home directory
+- ``` cp -R /tmp . ``` - copy entire subdirectory structure in home directory
 - ``` cp /etc/hosts ~/data/ ``` - copy hosts file in home/data directory. Don't forget to put slash behind the directory
 
 ###### 3.5 Working with Directories
