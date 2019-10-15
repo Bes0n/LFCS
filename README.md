@@ -283,7 +283,7 @@ Undo:
 
 ###### 4.7 Understanding Regular Expressions 
 * Regular expressions are text patterns that are used by tools like grep and others
-* Don't confuse regular expressions with globing
+* Don't confuse regular expressions with globbing
 * ``` grep 'a*' ``` - put your regular expressions in single quotes
 * grep, vim, awk, sed - tools which use regular expressions
 
