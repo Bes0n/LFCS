@@ -251,7 +251,7 @@ Undo:
 - ``` g ``` - top of the document
 - ``` G ``` - bottom of the document 
 - ``` /text ``` - search for text
-- ``` :noh ``` - disable higlight for current search
+- ``` :noh ``` - disable highlight for current search
 - ``` n, N ``` - switch for next inside of search 
 - ``` :300 ``` - go to line 300 
 - ``` dd, x ``` - delete line 
